@@ -1,0 +1,5 @@
+snippet inside_yx
+options head
+    const auto inside = [](int y, int x, int H, int W) {
+        return (0 <= y && y < H && 0 <= x && x < W);
+    };

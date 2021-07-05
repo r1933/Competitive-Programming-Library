@@ -1,0 +1,37 @@
+snippet gridBfs
+options head
+    // gridBfs {{{
+    template <class Tp = int>
+    auto gridBfs(const vector<string>& grid, const vector<pair<int, int>>& ss, int dir = 4, const string& walls = "#") {
+        static constexpr array<int, 8> dr = {0, 1, 0, -1, -1, 1, 1, -1};
+        static constexpr array<int, 8> dc = {1, 0, -1, 0, 1, 1, -1, -1};
+
+        const int R = grid.size();
+        const int C = grid[0].size();
+        vector<vector<Tp>> dist(R, vector<Tp>(C, numeric_limits<Tp>::max()));
+
+        queue<pair<int, int>> que;
+        for (const auto& s: ss) {
+            dist[s.first][s.second] = 0;
+            que.emplace(s.first, s.second);
+        }
+
+        while (!que.empty()) {
+            const int r = que.front().first;
+            const int c = que.front().second;
+            que.pop();
+            for (size_t i = 0; i < dir; ++i) {
+                const int nr = r + dr[i];
+                const int nc = c + dc[i];
+                if (nr < 0 || nc < 0 || nr >= R || nc >= C) continue;
+                if (walls.find(grid[nr][nc]) != string::npos) continue;
+                if (dist[r][c] + 1 < dist[nr][nc]) {
+                    dist[nr][nc] = dist[r][c] + 1;
+                    que.emplace(nr, nc);
+                }
+            }
+        }
+
+        return dist;
+    }
+    // }}}

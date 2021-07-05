@@ -1,0 +1,57 @@
+snippet bellmanFord2
+options head
+    /**
+     * 始点からの経路が存在しない頂点 v: dp[v] = INF
+     * 重みが無限大 (又はその逆) となる頂点 u: dp[u] = RINF
+     **/
+
+    // bellmanFord {{{
+    template <class Weight, class Compare = less<>>
+    vector<Weight> bellmanFord(const Graph<Weight> &G, const size_t src) {
+        const auto isBetter = Compare();
+        const Weight MAX = numeric_limits<Weight>::max();
+        const Weight MIN = numeric_limits<Weight>::min();
+        const Weight INF = (Compare()(MIN, MAX) ? MAX : MIN);
+        const Weight RINF = (Compare()(MAX, MIN) ? MAX : MIN);
+
+        const auto grow = [&isBetter](Weight &a, const Weight &b) -> bool {
+            return isBetter(b, a) && (a = b, true);
+        };
+
+        const size_t V = G.size();
+
+        vector<Weight> dp(V, INF);
+        dp[src] = 0;
+
+        for (size_t i = 0; i < V - 1; ++i) {
+            for (size_t s = 0; s < V; ++s) {
+                if (dp[s] != INF) {
+                    for (const auto &e: G[s]) {
+                        grow(dp[e.to], dp[s] + e.weight);
+                    }
+                }
+            }
+        }
+
+        vector<bool> updated(V);
+        for (size_t i = 0; i < V; ++i) {
+            for (size_t s = 0; s < V; ++s) {
+                if (dp[s] != INF) {
+                    for (const auto &e: G[s]) {
+                        if (updated[s] || grow(dp[e.to], dp[s] + e.weight)) {
+                            updated[e.to] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (size_t v = 0; v < V; ++v) {
+            if (updated[v]) {
+                dp[v] = RINF;
+            }
+        }
+
+        return dp;
+    }
+    // }}}

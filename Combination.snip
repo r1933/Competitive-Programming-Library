@@ -1,0 +1,42 @@
+snippet Combination
+options head
+    // Combination {{{
+    // based on Lucas's theorem
+    // preprocessing: O(p^2)
+    //   calculation: O(log n)
+    class Combination {
+    private:
+        intmax_t p;
+        vector<vector<intmax_t>> comb;
+
+        void init(intmax_t p) {
+            comb.assign(p, vector<intmax_t>(p));
+            comb[0][0] = 1;
+            for (intmax_t i = 1; i < p; ++i) {
+                comb[i][0] = 1;
+                for (intmax_t j = 1; j <= i; ++j) {
+                    comb[i][j] = (comb[i - 1][j - 1] + comb[i - 1][j]) % p;
+                }
+            }
+        }
+
+    public:
+        Combination() {}
+        Combination(intmax_t p_) : p(p_) {
+            init(p);
+        }
+
+        intmax_t C(intmax_t n, intmax_t k) {
+            if (k < 0 || n < k) return 0;
+            intmax_t ret = 1;
+            while (n > 0) {
+                intmax_t ni = n % p;
+                intmax_t ki = k % p;
+                ret = (ret * comb[ni][ki]) % p;
+                n /= p;
+                k /= p;
+            }
+            return ret;
+        }
+    };
+    // }}}

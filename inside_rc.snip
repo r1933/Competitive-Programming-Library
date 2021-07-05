@@ -1,0 +1,5 @@
+snippet inside_rc
+options head
+    const auto inside = [](int r, int c, int R, int C) {
+        return (0 <= r && r < R && 0 <= c && c < C);
+    };

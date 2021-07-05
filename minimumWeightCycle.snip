@@ -1,0 +1,73 @@
+snippet minimumWeightCycle
+options head
+    // minimumWeightCycle {{{
+    template <class Weight>
+    vector<Weight> dijkstra(const Graph<Weight> &G, const vector<size_t> &start_nodes, vector<int> &pre_node) {
+        using P = pair<Weight, size_t>;
+        vector<Weight> dp(G.size(), numeric_limits<Weight>::max());
+        priority_queue<P, vector<P>, greater<>> pq;
+        pre_node.resize(G.size(), -1);
+
+        for (const auto start_node: start_nodes) {
+            dp[start_node] = 0;
+            pq.emplace(0, start_node);
+        }
+
+        while (!pq.empty()) {
+            const Weight cur_cost = pq.top().first;
+            const size_t cur_node = pq.top().second;
+            pq.pop();
+
+            if (dp[cur_node] < cur_cost) {
+                continue;
+            }
+
+            for (const auto &e: G[cur_node]) {
+                const Weight new_cost = dp[cur_node] + e.weight;
+                const size_t new_node = e.to;
+                if (new_cost < dp[new_node]) {
+                    dp[new_node] = new_cost;
+                    pq.emplace(new_cost, new_node);
+                    pre_node[e.to] = cur_node;
+                }
+            }
+        }
+
+        return dp;
+    }
+
+    vector<int> getPath(const vector<int> &pre_node, const size_t g) {
+        vector<int> ret;
+        for (int cur = g; cur != -1; cur = pre_node[cur]) {
+            ret.emplace_back(cur);
+        }
+        reverse(ret.begin(), ret.end());
+        return ret;
+    }
+
+    vector<int> min_cycle;
+
+    template <class T>
+    T minimumWeightCycle(Graph<T> &G) {
+        const size_t V = G.size();
+        T ret = numeric_limits<T>::max();
+
+        for (size_t v = 0; v < V; ++v) {
+            for (size_t i = 0; i < G[v].size(); ++i) {
+                const Edge<T> e = G[v][i];
+                const size_t u = e.to;
+                G[v].erase(G[v].begin() + i);
+                vector<int> pre_node;
+                const auto dist = dijkstra(G, {u}, pre_node);
+                if (dist[v] == numeric_limits<T>::max()) continue;
+                if (ret > dist[v] + e.weight) {
+                    ret = dist[v] + e.weight;
+                    min_cycle = getPath(pre_node, v);
+                }
+                G[v].insert(G[v].begin() + i, e);
+            }
+        }
+
+        return ret;
+    }
+    // }}}

@@ -1,0 +1,11 @@
+snippet chmax_min
+options head
+    template <class T>
+    inline bool chmax(T &a, const T &b) noexcept {
+        return b > a && (a = b, true);
+    }
+
+    template <class T>
+    inline bool chmin(T &a, const T &b) noexcept {
+        return b < a && (a = b, true);
+    }

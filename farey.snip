@@ -1,0 +1,142 @@
+snippet farey
+options head
+    // Fraction {{{
+    class Fraction {
+    private:
+        constexpr static inline intmax_t gcd(intmax_t a, intmax_t b) {
+            return b == 0 ? abs(a) : gcd(b, a % b);
+        }
+
+    public:
+        intmax_t numerator, denominator;
+
+        Fraction() {
+            numerator = 0;
+            denominator = 1;
+        }
+
+        Fraction(intmax_t n, intmax_t d) {
+            if (n == 0) {
+                numerator = 0;
+                denominator = 1;
+            } else {
+                int sign = ((n < 0) == (d < 0) ? 1 : -1);
+                n = abs(n), d = abs(d);
+
+                intmax_t g = gcd(n, d);
+                numerator = sign * n / g;
+                denominator = d / g;
+            }
+        }
+
+        operator intmax_t() { return numerator / denominator; }
+        operator double() { return (double) numerator / denominator; }
+    };
+
+    Fraction operator+(const Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.denominator + rhs.numerator * lhs.denominator,
+             lhs.denominator * rhs.denominator
+            );
+        return ret;
+    }
+
+    Fraction operator+=(Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.denominator + rhs.numerator * lhs.denominator,
+             lhs.denominator * rhs.denominator
+            );
+        lhs = ret;
+        return lhs;
+    }
+
+    Fraction operator-(const Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.denominator - rhs.numerator * lhs.denominator,
+             lhs.denominator * rhs.denominator
+            );
+        return ret;
+    }
+
+    Fraction operator-=(Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.denominator - rhs.numerator * lhs.denominator,
+             lhs.denominator * rhs.denominator
+            );
+        lhs = ret;
+        return lhs;
+    }
+
+    Fraction operator*(const Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.numerator,
+             lhs.denominator * rhs.denominator
+            );
+        return ret;
+    }
+
+    Fraction operator*=(Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.numerator,
+             lhs.denominator * rhs.denominator
+            );
+        lhs = ret;
+        return lhs;
+    }
+
+    Fraction operator/(const Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.denominator,
+             lhs.denominator * rhs.numerator
+            );
+        return ret;
+    }
+
+    Fraction operator/=(Fraction &lhs, const Fraction &rhs) {
+        Fraction ret
+            (lhs.numerator * rhs.denominator,
+             lhs.denominator * rhs.numerator
+            );
+        lhs = ret;
+        return lhs;
+    }
+
+    bool operator<(const Fraction &lhs, const Fraction &rhs) {
+        const intmax_t lhs_numerator = lhs.numerator * rhs.denominator;
+        const intmax_t rhs_numerator = rhs.numerator * lhs.denominator;
+        return lhs_numerator < rhs_numerator;
+    }
+
+    bool operator>(const Fraction &lhs, const Fraction &rhs) { return rhs < lhs; }
+
+    bool operator<=(const Fraction &lhs, const Fraction &rhs) { return !(lhs > rhs); }
+
+    bool operator>=(const Fraction &lhs, const Fraction &rhs) { return !(lhs < rhs); }
+
+    bool operator==(const Fraction &lhs, const Fraction &rhs) { return !(lhs < rhs) && !(lhs > rhs); }
+
+    bool operator!=(const Fraction &lhs, const Fraction &rhs) { return (lhs < rhs) || (lhs > rhs); }
+
+    ostream& operator<<(ostream &os, const Fraction &a) {
+        if (a.denominator == 1) {
+            os << a.numerator;
+        } else {
+            os << a.numerator << '/' << a.denominator;
+        }
+        return os;
+    }
+    // }}}
+
+    vector<Fraction> f;
+
+    void farey(intmax_t M, Fraction l = Fraction(0, 1), Fraction r = Fraction(1, 1)) {
+        Fraction mediant(l.numerator + r.numerator, l.denominator + r.denominator);
+
+        if (mediant.denominator > M) return;
+
+        farey(M, l, mediant);
+
+        f.emplace_back(mediant);
+
+        farey(M, mediant, r);
+    }

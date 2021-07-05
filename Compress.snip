@@ -1,0 +1,52 @@
+snippet Compress
+options head
+    // Compress {{{
+    template <class T>
+    class Compress {
+        vector<T> xs;
+
+    public:
+        Compress() = default;
+
+        Compress(const vector<T> &vs) {
+            add(vs);
+        }
+
+        void add(const vector<T> &vs) {
+            copy(vs.begin(), vs.end(), back_inserter(xs));
+        }
+
+        void add(const T &x) {
+            xs.emplace_back(x);
+        }
+
+        void build() {
+            sort(xs.begin(), xs.end());
+            xs.erase(unique(xs.begin(), xs.end()), xs.end());
+        }
+
+        vector<intmax_t> get(const vector<T> &vs) const {
+            vector<intmax_t> ret;
+            transform(vs.begin(), vs.end(), back_inserter(ret), [&](const T &v) {
+                    return distance(xs.begin(), lower_bound(xs.begin(), xs.end(), v));
+                    });
+            return ret;
+        }
+
+        unordered_map<T, intmax_t> dict() const {
+            unordered_map<T, intmax_t> ret;
+            for (intmax_t i = 0; i < xs.size(); ++i) {
+                ret[xs[i]] = i;
+            }
+            return ret;
+        }
+
+        const size_t size() const {
+            return xs.size();
+        }
+
+        const T &operator[](size_t k) const {
+            return xs[k];
+        }
+    };
+    // }}}

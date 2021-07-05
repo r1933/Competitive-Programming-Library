@@ -1,0 +1,19 @@
+snippet subsets
+options word
+    struct subsets {
+        intmax_t s;
+
+        subsets(intmax_t s_) : s(s_) {}
+
+        struct itr {
+            intmax_t s;
+            intmax_t t;
+
+            bool operator!=(monostate) { return t != -1; }
+            void operator++() { t -= 1; }
+            intmax_t operator*() { return t &= s; }
+        };
+
+        itr begin() { return {s, s}; }
+        monostate end() { return {}; }
+    };

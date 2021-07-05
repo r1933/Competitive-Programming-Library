@@ -1,0 +1,11 @@
+snippet mvtemp
+options head
+    template <class T>
+    inline vector<T> makeVector(const T &initvalue, size_t sz) {
+        return vector<T>(sz, initvalue);
+    }
+
+    template <class T, class... Args>
+    inline auto makeVector(const T &initvalue, size_t sz, Args... args) {
+        return vector<decltype(makeVector<T>(initvalue, args...))>(sz, makeVector<T>(initvalue, args...));
+    }

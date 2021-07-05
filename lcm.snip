@@ -1,0 +1,3 @@
+snippet lcm
+options head
+  const auto lcm = [](intmax_t a, intmax_t b) { return a / __gcd(a, b) * b; };

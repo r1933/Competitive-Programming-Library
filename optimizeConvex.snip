@@ -1,0 +1,45 @@
+snippet optimizeConvex
+options head
+    // optimizeConvex {{{
+    template <class Tp, class Fn>
+    auto optimizeConvex(Tp xl, Tp xu, Tp err, Fn fn, bool maximize = true) {
+        const Tp phi = (1 + sqrt(static_cast<Tp>(5))) / 2;
+        size_t iter = (log(xu - xl) - log(err)) / log(phi) + 1;
+        Tp xml = (phi * xl + xu) / (1 + phi);
+        Tp xmu = (xl + phi * xu) / (1 + phi);
+        Tp yml = fn(xml);
+        Tp ymu = fn(xmu);
+        while (iter--) {
+            if (maximize) {
+                if (yml < ymu) {
+                    xl = xml;
+                    xml = xmu;
+                    yml = ymu;
+                    xmu = (xl + phi * xu) / (1 + phi);
+                    ymu = fn(xmu);
+                } else {
+                    xu = xmu;
+                    xmu = xml;
+                    ymu = yml;
+                    xml = (phi * xl + xu) / (1 + phi);
+                    yml = fn(xml);
+                }
+            } else {
+                if (yml < ymu) {
+                    xu = xmu;
+                    xmu = xml;
+                    ymu = yml;
+                    xml = (phi * xl + xu) / (1 + phi);
+                    yml = fn(xml);
+                } else {
+                    xl = xml;
+                    xml = xmu;
+                    yml = ymu;
+                    xmu = (xl + phi * xu) / (1 + phi);
+                    ymu = fn(xmu);
+                }
+            }
+        }
+        return make_pair(xml, yml);
+    }
+    // }}}

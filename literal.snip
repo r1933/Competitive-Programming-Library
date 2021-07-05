@@ -1,0 +1,5 @@
+snippet literal
+options word
+    constexpr size_t    operator""_zu(unsigned long long value) { return value; };
+    constexpr intmax_t  operator""_jd(unsigned long long value) { return value; };
+    constexpr uintmax_t operator""_ju(unsigned long long value) { return value; };

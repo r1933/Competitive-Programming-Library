@@ -1,0 +1,7 @@
+snippet moduloCount
+options word
+    // [L, R] で mod で割った余りが k となる整数の個数
+    const auto moduloCount = [](intmax_t L, intmax_t R, intmax_t mod, intmax_t k) {
+        R++;
+        return (R / mod + (k < R % mod)) - (L / mod + (k < L % mod));
+    };

@@ -1,0 +1,53 @@
+snippet Factorials
+options head
+    // Factorials {{{
+    template <class ModInt>
+    class Factorials {
+    public:
+        using value_type = ModInt;
+
+    private:
+        mutable vector<value_type> m_f, m_i, m_fi;
+
+    public:
+        Factorials() = default;
+
+        explicit Factorials(intmax_t n) : m_f(n + 1), m_i(n + 1), m_fi(n + 1) {
+            m_f[0] = 1;
+            for (intmax_t i = 1; i <= n; ++i) {
+                m_f[i] = m_f[i - 1] * i;
+            }
+
+            const intmax_t MOD = m_f[0].getModulo();
+            m_i[1] = 1;
+            for (intmax_t i = 2; i <= n; ++i) {
+                m_i[i] = -value_type(MOD / i) * m_i[MOD % i];
+            }
+
+            m_fi[0] = 1;
+            for (intmax_t i = 1; i <= n; ++i) {
+                m_fi[i] = m_fi[i - 1] * m_i[i];
+            }
+        }
+
+        value_type inv(intmax_t n) const { return m_i[n]; }
+        value_type fact(intmax_t n) const { return m_f[n]; }
+        value_type finv(intmax_t n) const { return m_fi[n]; }
+
+        value_type C(intmax_t n, intmax_t k) const {
+            if (k < 0 || n < k) return 0;
+            return m_f[n] * m_fi[k] * m_fi[n - k];
+        }
+
+        value_type P(intmax_t n, intmax_t k) const {
+            if (k < 0 || n < k) return 0;
+            return m_f[n] * m_fi[n - k];
+        }
+
+        value_type H(intmax_t n, intmax_t k) const {
+            return C(n + k - 1, k);
+        }
+    };
+    // }}}
+
+    Factorials<Mint> F(1'000'000);

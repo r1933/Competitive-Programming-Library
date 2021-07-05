@@ -1,0 +1,18 @@
+snippet integerOptimizeConvex
+options head
+    // integerOptimizeConvex {{{
+    template <class Tp, class Fn>
+    auto integerOptimizeConvex(Tp xl, Tp xu, Fn fn, bool maximize = true) {
+        while (xu - xl > 1) {
+            const Tp xm = (xl + xu) / 2;
+            if (maximize) {
+                if (fn(xm - 1) < fn(xm)) xl = xm;
+                else xu = xm;
+            } else {
+                if (fn(xm - 1) > fn(xm)) xl = xm;
+                else xu = xm;
+            }
+        }
+        return make_pair(xl, fn(xl));
+    }
+    // }}}

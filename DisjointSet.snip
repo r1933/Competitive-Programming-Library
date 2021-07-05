@@ -1,0 +1,57 @@
+snippet DisjointSet
+options head
+    // DisjointSet {{{
+    struct DisjointSet {
+        const size_t n;
+        mutable vector<int> c;
+        explicit DisjointSet(const size_t n) : n(n), c(n, -1) {}
+
+        size_t size(size_t v) const {
+            assert(v < n);
+            return -c[root(v)];
+        }
+
+        size_t root(size_t v) const {
+            assert(v < n);
+            return (c[v] < 0) ? v : c[v] = root(c[v]);
+        }
+
+        bool connected(size_t u, size_t v) const {
+            assert(u < n);
+            assert(v < n);
+            return root(u) == root(v);
+        }
+
+        size_t unite(size_t u, size_t v) {
+            assert(u < n);
+            assert(v < n);
+            u = root(u);
+            v = root(v);
+            if (u == v) return u;
+            if (-c[u] < -c[v]) swap(u, v);
+            c[u] += c[v];
+            c[v] = u;
+            return u;
+        }
+
+        vector<vector<size_t>> groups() {
+            vector<size_t> roots(n), group_size(n);
+            for (size_t i = 0; i < n; ++i) {
+                roots[i] = root(i);
+                group_size[roots[i]]++;
+            }
+            vector<vector<size_t>> res(n);
+            for (size_t i = 0; i < n; ++i) {
+                res[i].reserve(group_size[i]);
+            }
+            for (size_t i = 0; i < n; ++i) {
+                res[roots[i]].emplace_back(i);
+            }
+            res.erase(
+                remove_if(res.begin(), res.end(),
+                          [&](const auto& v) { return v.empty(); }),
+                res.end());
+            return res;
+        }
+    };
+    // }}}

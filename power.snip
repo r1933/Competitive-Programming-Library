@@ -1,0 +1,13 @@
+snippet power
+options head
+    template <class T>
+    T power(const T& b, const intmax_t& e) {
+        T ret = 1;
+        T n = b;
+        for (intmax_t p = abs(e); p > 0; p >>= 1) {
+            if (p & 1) ret *= n;
+            n *= n;
+        }
+        if (e < 0) return T(1) / ret;
+        return ret;
+    }

@@ -1,0 +1,128 @@
+snippet ModInt
+options head
+    // ModInt {{{
+    template <intmax_t Modulo>
+    class ModInt {
+    public:
+        using value_type = intmax_t;
+
+    private:
+        static constexpr value_type cmod = Modulo; // compile-time
+        static value_type rmod; // runtime
+        value_type value = 0;
+
+        static constexpr value_type inverse(value_type n, value_type m) {
+            value_type a = n;
+            value_type b = m;
+            value_type x = 0;
+            value_type y = 1;
+            for (value_type u = y, v = x; a;) {
+                const value_type t = b / a;
+                swap(x -= t * u, u);
+                swap(y -= t * v, v);
+                swap(b -= t * a, a);
+            }
+            if ((x %= m) < 0) x += m;
+            return x;
+        }
+
+        static value_type normalize(intmax_t n, value_type m) {
+            if (n >= m) {
+                n %= m;
+            } else if (n < 0) {
+                if ((n %= m) < 0) n += m;
+            }
+            return n;
+        }
+
+    public:
+        ModInt() = default;
+        ModInt(intmax_t n) : value(normalize(n, getModulo())) {}
+
+        template <typename T>
+        constexpr explicit operator T() const { return static_cast<T>(value); }
+
+        ModInt& operator=(intmax_t n) {
+            value = normalize(n, getModulo());
+            return *this;
+        }
+
+        ModInt& operator+=(const ModInt& other) {
+            if ((value += other.value) >= getModulo()) value -= getModulo();
+            return *this;
+        }
+        ModInt& operator-=(const ModInt& other) {
+            if ((value -= other.value) < 0) value += getModulo();
+            return *this;
+        }
+        ModInt& operator*=(const ModInt& other) {
+            value = (value * other.value) % getModulo();
+            return *this;
+        }
+        ModInt& operator/=(const ModInt& other) {
+            value = (value * inverse(other.value, getModulo())) % getModulo();
+            return *this;
+        }
+
+        ModInt& operator++() {
+            if (++value == getModulo()) value = 0;
+            return *this;
+        }
+        ModInt& operator--() {
+            if (value-- == 0) value = getModulo() - 1;
+            return *this;
+        }
+
+        ModInt operator++(int) {
+            const ModInt tmp(*this);
+            ++*this;
+            return tmp;
+        }
+        ModInt operator--(int) {
+            const ModInt tmp(*this);
+            --*this;
+            return tmp;
+        }
+
+        friend ModInt operator+(ModInt lhs, const ModInt& rhs) { return lhs += rhs; }
+        friend ModInt operator-(ModInt lhs, const ModInt& rhs) { return lhs -= rhs; }
+        friend ModInt operator*(ModInt lhs, const ModInt& rhs) { return lhs *= rhs; }
+        friend ModInt operator/(ModInt lhs, const ModInt& rhs) { return lhs /= rhs; }
+
+        ModInt operator+() const { return *this; }
+        ModInt operator-() const {
+            if (value == 0) return *this;
+            return ModInt(getModulo() - value);
+        }
+
+        friend bool operator==(const ModInt& lhs, const ModInt& rhs) {
+            return lhs.value == rhs.value;
+        }
+        friend bool operator!=(const ModInt& lhs, const ModInt& rhs) {
+            return !(lhs == rhs);
+        }
+
+        friend ostream& operator<<(ostream& os, const ModInt& n) {
+            return os << n.value;
+        }
+        friend istream& operator>>(istream& is, ModInt& n) {
+            is >> n.value;
+            n.value = normalize(n.value, getModulo());
+            return is;
+        }
+
+        static value_type getModulo() { return ((cmod > 0) ? cmod : rmod); }
+
+        template <int M = Modulo, typename T = typename enable_if<(M <= 0)>::type>
+        static T setModulo(value_type m) { rmod = m; }
+    };
+
+    template <intmax_t M>
+    constexpr typename ModInt<M>::value_type ModInt<M>::cmod;
+    template <intmax_t M>
+    typename ModInt<M>::value_type ModInt<M>::rmod;
+    // }}}
+
+    // constexpr intmax_t MOD = intmax_t(1e9) + 7;
+    // constexpr intmax_t MOD = 998244353;
+    using Mint = ModInt<MOD>;

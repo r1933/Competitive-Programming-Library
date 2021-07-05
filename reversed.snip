@@ -1,0 +1,14 @@
+snippet reversed
+options head
+    template <class Container>
+    struct reverse_t {
+        Container &c;
+        reverse_t(Container &c) : c(c) {}
+        auto begin() { return c.rbegin(); }
+        auto end() { return c.rend(); }
+    };
+
+    template <class Container>
+    auto reversed(Container &c) {
+        return reverse_t<Container>(c);
+    }

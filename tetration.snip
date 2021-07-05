@@ -1,0 +1,42 @@
+snippet tetration
+options head
+    // tetration {{{
+    intmax_t totient(intmax_t n) {
+        intmax_t ret = n;
+        for (intmax_t i = 2; i * i <= n; ++i) {
+            if (n % i == 0) {
+                ret -= ret / i;
+                while (n % i == 0) {
+                    n /= i;
+                }
+            }
+        }
+        if (n > 1) {
+            ret -= ret / n;
+        }
+        return ret;
+    }
+
+    intmax_t power(intmax_t b, intmax_t e, intmax_t m) {
+        intmax_t ret = 1;
+        for (intmax_t i = e; i > 0; i >>= 1) {
+            if (i & 1) {
+                ret = (ret * b) % m;
+            }
+            b = (b * b) % m;
+        }
+        return ret;
+    }
+
+    intmax_t tetration(intmax_t a, intmax_t b, intmax_t m) {
+        if (m == 1) return 0;
+        if (a == 0) return ~b & 1;
+        if (b == 0) return 1;
+        if (b == 1) return a % m;
+        if (b == 2) return power(a % m, a, m);
+        if (a == 2 && b == 3) return 16 % m;
+        if (a == 3 && b == 3) return power(3, 27, m);
+        if (a == 2 && b == 4) return (1_jd << 16) % m;
+        return power(a, tetration(a, b - 1, totient(m)) + totient(m), m);
+    }
+    // }}}

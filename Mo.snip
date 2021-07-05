@@ -1,0 +1,59 @@
+snippet Mo
+options head
+    // Mo's algorithm {{{
+    template <class T>
+    T isqrt(T n) {
+        if (n <= 1) return n;
+        T ok = 1;
+        T ng = static_cast<T>(1) << (CHAR_BIT * (sizeof(T) / 2));
+        while (ng - ok > 1) {
+            const T mid = (ok + ng) >> 1;
+            if (mid * mid <= n) ok = mid;
+            else ng = mid;
+        }
+        return ok;
+    }
+
+    struct Mo {
+        size_t wid;
+        vector<size_t> ls, rs, is;
+        vector<bool> vs;
+
+        Mo(size_t N, size_t Q) : wid(isqrt(N)), is(Q), vs(N) {
+            iota(is.begin(), is.end(), 0);
+        }
+
+        // [l, r)
+        void insert(size_t l, size_t r) {
+            ls.emplace_back(l);
+            rs.emplace_back(r);
+        }
+
+        template <typename Add, typename Remove, typename Result>
+        void exec(const Add& addFunc, const Remove& removeFunc, const Result& resultFunc) {
+            assert(ls.size() == rs.size());
+            sort(is.begin(), is.end(), [&](size_t i0, size_t i1) {
+                const size_t l0 = ls[i0] / wid;
+                const size_t r0 = rs[i0];
+                const size_t l1 = ls[i1] / wid;
+                const size_t r1 = rs[i1];
+                if (l0 != l1) return l0 < l1;
+                if (l0 & 1) return r0 < r1;
+                return r0 > r1;
+            });
+            const auto func = [&](size_t i) -> void {
+                vs[i].flip();
+                if (vs[i]) addFunc(i);
+                else removeFunc(i);
+            };
+            size_t l = 0, r = 0;
+            for (const auto i: is) {
+                while (ls[i] < l) func(--l);
+                while (r < rs[i]) func(r++);
+                while (l < ls[i]) func(l++);
+                while (rs[i] < r) func(--r);
+                resultFunc(i);
+            }
+        }
+    };
+    // }}}

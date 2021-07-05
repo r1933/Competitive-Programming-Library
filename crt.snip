@@ -1,0 +1,37 @@
+snippet crt
+options head
+    // Chinese Remainder Theorem {{{
+
+    // find (x, y) s.t. ax + by = gcd(a, b)
+    // |x| <= b, |y| <= a
+    // return gcd(a, b)
+    template <class T>
+    T extgcd(T a, T b, T &x, T &y) {
+        T g = a;
+        x = 1, y = 0;
+        if (b != 0) {
+            g = extgcd(b, a % b, y, x);
+            y -= (a / b) * x;
+        }
+        return g;
+    }
+
+    // When there is no solution: return (0, 0)
+    //                 otherwise: return (rem, mod)
+    // time complexity: O(n log lcm(ms[i]))
+    pair<intmax_t, intmax_t> crt(const vector<intmax_t>& rs, const vector<intmax_t>& ms) {
+        assert(rs.size() == ms.size());
+        intmax_t r = 0, m = 1;
+        for (size_t i = 0; i < rs.size(); ++i) {
+            intmax_t p, q;
+            intmax_t g = extgcd(m, ms[i], p, q);
+            if ((rs[i] - r) % g != 0) return make_pair(0, 0);
+            intmax_t t = (rs[i] - r) / g * p % (ms[i] / g);
+            r += m * t;
+            m *= ms[i] / g;
+        }
+        r = (r % m + m) % m;
+        return make_pair(r, m);
+    }
+
+    // }}}

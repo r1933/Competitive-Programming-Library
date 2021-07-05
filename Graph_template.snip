@@ -1,0 +1,52 @@
+snippet Graph_template
+options head
+    // Edge {{{
+    template <class Weight>
+    struct Edge {
+        size_t from, to;
+        Weight weight;
+
+        Edge() {}
+        Edge(size_t from, size_t to, Weight weight = 1) :
+            from(from), to(to), weight(weight)
+        {}
+
+        bool operator<(const Edge &rhs) const {
+            return weight < rhs.weight;
+        }
+
+        bool operator>(const Edge &rhs) const {
+            return weight > rhs.weight;
+        }
+
+        operator size_t() const {
+            return to;
+        }
+    };
+    // }}}
+
+    // Graph {{{
+    template <class Weight>
+    class Graph : public vector<vector<Edge<Weight>>> {
+        using graph = vector<vector<Edge<Weight>>>;
+
+    public:
+        Graph() {}
+        Graph(const size_t V) : graph(V) {}
+
+        void connect(size_t from, size_t to, Weight weight = 1) {
+            (*this)[from].emplace_back(from, to, weight);
+        }
+
+        friend ostream& operator<<(ostream &strm, const Graph &G) {
+            for (size_t v = 0; v < G.size(); ++v) {
+                strm << '[' << setw(2) << v << ']';
+                for (const auto &e: G[v]) {
+                    strm << ' ' << setw(2) << e.to;
+                }
+                strm << '\n';
+            }
+            return strm;
+        }
+    };
+    // }}}

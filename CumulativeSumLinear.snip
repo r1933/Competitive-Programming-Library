@@ -1,0 +1,44 @@
+snippet CumulativeSumLinear
+options head
+    // CumulativeSumLinear {{{
+    template <class T>
+    class CumulativeSumLinear {
+        size_t n;
+        vector<T> xs, as, bs;
+
+    public:
+        CumulativeSumLinear() {}
+        CumulativeSumLinear(size_t n) : n(n), xs(n), as(n + 1), bs(n + 1) {}
+
+        // 数列 xs の区間 [l, r) に対して、
+        // xs_{l + k} に a * k + b を加算する (0 <= k <= r - l - 1)
+        void add(size_t l, size_t r, T a, T b) {
+            as[l] += a;
+            as[r] -= a;
+            bs[l] += b;
+            bs[r] -= b;
+            bs[l] -= a * l;
+            bs[r] += a * l;
+        }
+
+        void build() {
+            for (size_t i = 0; i < n; ++i) {
+                xs[i] += as[i] * i + bs[i];
+                as[i + 1] += as[i];
+                bs[i + 1] += bs[i];
+            }
+        }
+
+        T operator[](size_t i) const {
+            return xs[i];
+        }
+
+        T& operator[](size_t i) {
+            return xs[i];
+        }
+
+        const auto& data() const {
+            return xs;
+        }
+    };
+    // }}}

@@ -1,0 +1,25 @@
+snippet largestRectangle
+options head
+    // largestRectangle {{{
+    intmax_t largestRectangle(vector<intmax_t> hs) {
+        hs.emplace_back(0);
+        const size_t n = hs.size();
+        vector<intmax_t> ls(n);
+        stack<intmax_t> st;
+        intmax_t res = 0;
+        for (intmax_t i = 0; i < n; ++i) {
+            while (!st.empty()) {
+                const auto righttail = st.top();
+                if (hs[righttail] >= hs[i]) {
+                    res = max(res, hs[righttail] * (i - ls[righttail] - 1));
+                    st.pop();
+                } else {
+                    break;
+                }
+            }
+            ls[i] = (st.empty()) ? -1 : st.top();
+            st.emplace(i);
+        }
+        return res;
+    }
+    // }}}

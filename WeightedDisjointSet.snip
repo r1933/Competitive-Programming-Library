@@ -1,0 +1,84 @@
+snippet WeightedDisjointSet
+options head
+    // WeightedDisjointSet {{{
+    template <class Abel>
+    struct WeightedDisjointSet {
+        const size_t n;
+        mutable vector<int> c;
+        mutable vector<Abel> diff_weight;
+
+        explicit WeightedDisjointSet(const size_t n, Abel SUM_UNITY = 0) :
+            n(n), c(n, -1), diff_weight(n, SUM_UNITY)
+        {}
+
+        size_t size(size_t v) const {
+            assert(v < n);
+            return -c[root(v)];
+        }
+
+        size_t root(size_t v) const {
+            assert(v < n);
+            if (c[v] < 0) {
+                return v;
+            } else {
+                const size_t r = root(c[v]);
+                diff_weight[v] += diff_weight[c[v]];
+                return c[v] = r;
+            }
+        }
+
+        Abel weight(size_t v) const {
+            assert(v < n);
+            root(v);
+            return diff_weight[v];
+        }
+
+        Abel diff(size_t u, size_t v) const {
+            assert(u < n);
+            assert(v < n);
+            return weight(v) - weight(u);
+        }
+
+        bool connected(size_t u, size_t v) const {
+            assert(u < n);
+            assert(v < n);
+            return root(u) == root(v);
+        }
+
+        // weight(v) = weight(u) + w
+        size_t unite(size_t u, size_t v, Abel w) {
+            assert(u < n);
+            assert(v < n);
+            w += weight(u);
+            w -= weight(v);
+            u = root(u);
+            v = root(v);
+            if (u == v) return u;
+            if (-c[u] < -c[v]) swap(u, v), w = -w;
+            c[u] += c[v];
+            c[v] = u;
+            diff_weight[v] = w;
+            return u;
+        }
+
+        vector<vector<size_t>> groups() {
+            vector<size_t> roots(n), group_size(n);
+            for (size_t i = 0; i < n; ++i) {
+                roots[i] = root(i);
+                group_size[roots[i]]++;
+            }
+            vector<vector<size_t>> res(n);
+            for (size_t i = 0; i < n; ++i) {
+                res[i].reserve(group_size[i]);
+            }
+            for (size_t i = 0; i < n; ++i) {
+                res[roots[i]].emplace_back(i);
+            }
+            res.erase(
+                remove_if(res.begin(), res.end(),
+                          [&](const auto& v) { return v.empty(); }),
+                res.end());
+            return res;
+        }
+    };
+    // }}}

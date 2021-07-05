@@ -1,0 +1,40 @@
+snippet FenwickTree
+options head
+    // FenwickTree {{{
+    template <class T>
+    struct FenwickTree {
+        vector<T> ft;
+        const size_t SIZE;
+
+        explicit FenwickTree(size_t n) : ft(n + 5, 0), SIZE(1 << (__lg(n + 5) + 1)) {}
+
+        void add(int i, const T& v) {
+            for (++i; i < ft.size(); i += i & -i) ft[i] += v;
+        }
+
+        // [0, i]
+        T sum(int i) const {
+            T ret = 0;
+            for (++i; i > 0; i -= i & -i) ret += ft[i];
+            return ret;
+        }
+
+        // [s, t]
+        T sum(int s, int t) const {
+            if (s > t) swap(s, t);
+            return sum(t) - sum(s - 1);
+        }
+
+        size_t lower_bound(T v) const {
+            if (v <= 0) return 0;
+            T x = 0;
+            for (size_t k = SIZE; k > 0; k >>= 1) {
+                if (x + k < ft.size() && ft[x + k] < v) {
+                    v -= ft[x + k];
+                    x += k;
+                }
+            }
+            return x;
+        }
+    };
+    // }}}

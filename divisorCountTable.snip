@@ -1,0 +1,11 @@
+snippet divisorCountTable
+options head
+    vector<intmax_t> divisorCountTable(intmax_t n) {
+        vector<intmax_t> res(n + 1);
+        for (intmax_t i = 1; i <= n; ++i) {
+            for (intmax_t j = i; j <= n; j += i) {
+                res[j]++;
+            }
+        }
+        return res;
+    }

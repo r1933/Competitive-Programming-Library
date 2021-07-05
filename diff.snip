@@ -1,0 +1,6 @@
+snippet diff
+options head
+    template <class T>
+    inline T diff(const T &a, const T &b) noexcept {
+        return a < b ? b - a : a - b;
+    }

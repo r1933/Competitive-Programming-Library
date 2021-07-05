@@ -1,0 +1,12 @@
+snippet binomialTable_constant_n
+options head
+    // binomial[k] := binomial(n, k) を O(k) で前計算する。
+    template <class T>
+    vector<T> binomialTable_constant_n(intmax_t n, intmax_t k) {
+        vector<T> binomial(k + 1);
+        binomial[0] = 1;
+        for (intmax_t i = 1; i <= k; ++i) {
+            binomial[i] = binomial[i - 1] * (n - i + 1) / i;
+        }
+        return binomial;
+    }

@@ -1,0 +1,50 @@
+snippet EulerTourForVertex
+options head
+    // EulerTourForVertex {{{
+    class EulerTourForVertex {
+    private:
+        size_t pos;
+
+        void dfs(size_t v, size_t p) {
+            ls[v] = pos++;
+            for (const auto& u: G[v]) {
+                if (u != p) dfs(u, v);
+            }
+            rs[v] = pos;
+        }
+
+    public:
+        vector<size_t> ls, rs; // [ls[v], rs[v]) が v を根とする部分木に対応
+        vector<vector<size_t>> G;
+
+        EulerTourForVertex() {}
+        explicit EulerTourForVertex(size_t N) : ls(N), rs(N), G(N) {}
+
+        void connect(size_t u, size_t v) {
+            G[u].emplace_back(v);
+            G[v].emplace_back(u);
+        }
+
+        void build(size_t src = 0) {
+            pos = 0;
+            dfs(src, -1);
+        }
+
+        size_t left(size_t v) const {
+            return ls[v];
+        }
+
+        size_t right(size_t v) const {
+            return rs[v];
+        }
+
+        size_t size() const {
+            return pos + 1;
+        };
+
+        template <typename Func>
+            void exec(size_t v, Func fn) {
+                fn(ls[v], rs[v]);
+            }
+    };
+    // }}}

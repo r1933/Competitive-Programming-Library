@@ -1,0 +1,13 @@
+snippet digit
+options head
+    vector<int> digit(intmax_t n) {
+        vector<int> ret;
+
+        do {
+            ret.push_back(n % 10);
+            n /= 10;
+        } while (n > 0);
+
+        reverse(ret.begin(), ret.end());
+        return ret;
+    }

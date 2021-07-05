@@ -1,0 +1,7 @@
+snippet padding
+options head
+    string padding(const string& s, const size_t w, const char c = '0') {
+        stringstream ss;
+        ss << setw(w) << setfill(c) << s;
+        return ss.str();
+    }

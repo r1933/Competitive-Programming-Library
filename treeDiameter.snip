@@ -1,0 +1,21 @@
+snippet treeDiameter
+options head
+    template <class T>
+    pair<T, int> dfs(const Graph<T> &G, int cur, int par) {
+        pair<T, int> ret(0, cur);
+        for (const auto &e: G[cur]) {
+            if (e.to == par) continue;
+            auto value = dfs(G, e.to, cur);
+            value.first += e.weight;
+            ret = max(ret, value);
+        }
+        return ret;
+    }
+
+    // treeDiameter(G) := 非負の重み付き無向木 G の直径
+    template <class T>
+    T treeDiameter(const Graph<T> &G) {
+        const auto u = dfs(G, 0, -1);
+        const auto v = dfs(G, u.second, -1);
+        return v.first;
+    }

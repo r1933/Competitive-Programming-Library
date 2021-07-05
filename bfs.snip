@@ -1,0 +1,25 @@
+snippet bfs
+options head
+    // bfs {{{
+    template <class Tp>
+    auto bfs(const Graph<Tp>& G, size_t s) {
+        vector<Tp> dist(G.size(), numeric_limits<Tp>::max());
+        dist[s] = 0;
+
+        queue<size_t> que;
+        que.emplace(s);
+
+        while (!que.empty()) {
+            const auto cur = que.front();
+            que.pop();
+            for (const auto& e: G[cur]) {
+                if (dist[cur] + e.weight < dist[e.to]) {
+                    dist[e.to] = dist[cur] + e.weight;
+                    que.emplace(e.to);
+                }
+            }
+        }
+
+        return dist;
+    }
+    // }}}

@@ -1,0 +1,32 @@
+snippet topologicalSort
+options head
+    // topologicalSort {{{
+    template <class T>
+    vector<size_t> topologicalSort(const Graph<T> &G) {
+        const size_t N = G.size();
+        vector<size_t> ord, indeg(N);
+        queue<size_t> que;
+        ord.reserve(N);
+        for (size_t v = 0; v < N; ++v) {
+            for (const auto e: G[v]) {
+                indeg[e.to]++;
+            }
+        }
+        for (size_t v = 0; v < N; ++v) {
+            if (indeg[v] == 0) {
+                que.push(v);
+            }
+        }
+        while (!que.empty()) {
+            const size_t cur = que.front();
+            que.pop();
+            ord.push_back(cur);
+            for (const auto e: G[cur]) {
+                if (--indeg[e.to] == 0) {
+                    que.push(e.to);
+                }
+            }
+        }
+        return ord;
+    }
+    // }}}

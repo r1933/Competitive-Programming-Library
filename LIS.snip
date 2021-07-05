@@ -1,0 +1,30 @@
+snippet LIS
+options head
+    /**
+     * 狭義単調増加 -> less<>
+     * 広義単調増加 -> less_equal<>
+     * 狭義単調減少 -> greater<>
+     * 広義単調減少 -> greater_equal<>
+    **/
+
+    // LongestIncreasingSubsequence {{{
+    template <class T, class Compare>
+    size_t LongestIncreasingSubsequence(const vector<T> &a) {
+        const T MAX = numeric_limits<T>::max();
+        const T MIN = numeric_limits<T>::min();
+        const T INF = (Compare()(MIN, MAX) ? MAX : MIN);
+        vector<T> lis(a.size(), INF);
+
+        for (const auto &e: a) {
+            *lower_bound(lis.begin(), lis.end(), e, Compare()) = e;
+        }
+
+        for (auto it = lis.begin(); it != lis.end(); ++it) {
+            if (*it == INF) {
+                return distance(lis.begin(), it);
+            }
+        }
+
+        return lis.size();
+    }
+    // }}}

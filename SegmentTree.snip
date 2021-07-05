@@ -1,0 +1,54 @@
+snippet SegmentTree
+options head
+    // SegmentTree {{{
+    template <typename Monoid, typename Func>
+    struct SegmentTree {
+        const size_t sz;
+        const Func fn;
+        const Monoid unity;
+        vector<Monoid> seg;
+
+        SegmentTree(const size_t n, const Monoid &u, Func f)
+            : sz(1 << (__lg(n + 5) + 1)), fn(f), unity(u), seg(sz * 2, unity) {}
+
+        void set(size_t k, const Monoid &v) {
+            seg[k + sz] = v;
+        }
+
+        Monoid& operator[](size_t k) {
+            return seg[k + sz];
+        }
+
+        const Monoid& operator[](size_t k) const {
+            return seg[k + sz];
+        }
+
+        void build() {
+            for (size_t k = sz - 1; k > 0; --k) {
+                seg[k] = fn(seg[2 * k], seg[2 * k + 1]);
+            }
+        }
+
+        void update(size_t k, const Monoid &x) {
+            k += sz;
+            seg[k] = x;
+            while (k >>= 1) {
+                seg[k] = fn(seg[2 * k], seg[2 * k + 1]);
+            }
+        }
+
+        Monoid fold(size_t l, size_t r) const {
+            Monoid L = unity;
+            Monoid R = unity;
+            for (l += sz, r += sz; l < r; l >>= 1, r >>= 1) {
+                if (l & 1) {
+                    L = fn(L, seg[l++]);
+                }
+                if (r & 1) {
+                    R = fn(seg[--r], R);
+                }
+            }
+            return fn(L, R);
+        }
+    };
+    // }}}

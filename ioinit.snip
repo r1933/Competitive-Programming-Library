@@ -1,0 +1,9 @@
+snippet ioinit
+options head
+    void ioinit() {
+        ios_base::sync_with_stdio(false);
+        cin.tie(nullptr);
+        cout << fixed << setprecision(10);
+        cerr << fixed << setprecision(10);
+        clog << fixed << setprecision(10);
+    }

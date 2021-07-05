@@ -1,0 +1,82 @@
+snippet StronglyConnectedComponents
+options head
+    // StronglyConnectedComponents {{{
+    class StronglyConnectedComponents {
+    private:
+        const size_t V;
+        vector<vector<size_t>> gg, rg;
+        vector<size_t> cmp, vs;
+        vector<bool> used;
+        size_t scc_cnt;
+
+        void dfs(size_t v) {
+            used[v] = true;
+            for (const auto &u: gg[v]) {
+                if (!used[u]) dfs(u);
+            }
+            vs.emplace_back(v);
+        }
+
+        void rdfs(size_t v) {
+            used[v] = true;
+            cmp[v] = scc_cnt;
+            for (const auto &u: rg[v]) {
+                if (!used[u]) rdfs(u);
+            }
+        }
+
+    public:
+        StronglyConnectedComponents(size_t n) : V(n), gg(n), rg(n), cmp(n), scc_cnt(0) {}
+
+        void connect(size_t from, size_t to) {
+            gg[from].emplace_back(to);
+            rg[to].emplace_back(from);
+        }
+
+        // 強連結成分分解をする。強連結成分の番号はトポロジカル順序で割り振られる。
+        void build() {
+            used.assign(V, false);
+            vs.reserve(V);
+
+            for (size_t v = 0; v < V; ++v) {
+                if (!used[v]) dfs(v);
+            }
+
+            used.assign(V, false);
+            for (size_t i = vs.size(); i--;) {
+                if (!used[vs[i]]) rdfs(vs[i]), scc_cnt++;
+            }
+        }
+
+        // 頂点 v が属する強連結成分の番号
+        // [0, scc_cnt)
+        size_t operator[](size_t v) const {
+            return cmp[v];
+        }
+
+        // 強連結成分の個数
+        size_t sccCount() const {
+            return scc_cnt;
+        }
+
+        // 強連結成分ごとに縮約した結果の DAG を作成する。
+        // ノード番号が小さいほどトポロジカル順序が早い。
+        vector<vector<size_t>> createDAG() const {
+            vector<vector<size_t>> c(scc_cnt);
+            for (size_t v = 0; v < V; ++v) {
+                for (const auto &u: gg[v]) {
+                    if (cmp[v] != cmp[u]) {
+                        c[cmp[v]].emplace_back(cmp[u]);
+                    }
+                }
+            }
+
+            for (size_t i = 0; i < scc_cnt; ++i) {
+                sort(c[i].begin(), c[i].end());
+                c[i].erase(unique(c[i].begin(), c[i].end()), c[i].end());
+            }
+
+            return c;
+        }
+    };
+    // }}}

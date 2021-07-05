@@ -1,0 +1,101 @@
+snippet DoublingLCA
+options head
+    // DoublingLCA {{{
+    template <class Weight>
+    class DoublingLCA {
+    public:
+        const size_t V;
+        const size_t LOG_V;
+        Graph<Weight> G;
+        vector<int> depth;
+        vector<Weight> weight_sum;
+        vector<vector<int>> table;
+        // table[k][v] := ノード v から根へ 2^k だけ移動した先のノード番号
+
+        DoublingLCA(size_t n) :
+            V(n),
+            LOG_V(32 - __builtin_clz(V)), // ceil(log2(V))
+            G(V),
+            depth(V),
+            weight_sum(V),
+            table(LOG_V, vector<int>(V, -1))
+        {}
+
+        // u - v 間に無向辺を張る
+        void connect(size_t u, size_t v, Weight weight = 0) {
+            G.connect(u, v, weight);
+            G.connect(v, u, weight);
+        }
+
+        // 構築 O(V log(V))
+        void build(size_t root) {
+            dfs(root, -1, 0, 0);
+            for (size_t k = 0; k + 1 < LOG_V; ++k) {
+                for (size_t v = 0; v < V; ++v) {
+                    if (table[k][v] == -1) {
+                        continue;
+                    }
+                    table[k + 1][v] = table[k][table[k][v]];
+                }
+            }
+        }
+
+        // u, v の最深共通祖先を求める O(log(V))
+        size_t lca(size_t u, size_t v) {
+            if (depth[u] > depth[v]) swap(u, v);
+            for (int i = LOG_V - 1; i >= 0; --i) {
+                if ((depth[v] - depth[u]) >> i & 1) {
+                    v = table[i][v];
+                }
+            }
+
+            if (u == v) {
+                return u;
+            }
+
+            for (int i = LOG_V - 1; i >= 0; --i) {
+                if (table[i][u] != table[i][v]) {
+                    u = table[i][u];
+                    v = table[i][v];
+                }
+            }
+
+            return table[0][u];
+        }
+
+        // v から根へ k だけ移動した先のノードを求める
+        size_t climb(size_t v, size_t k) {
+            size_t i = 0;
+            while (k > 0) {
+                if (k & 1) {
+                    v = table[i][v];
+                }
+                ++i;
+                k >>= 1;
+            }
+            return v;
+        }
+
+        // u - v 間のパスの重みの和を求める
+        Weight pathWeight(size_t u, size_t v) {
+            return weight_sum[u] + weight_sum[v] - 2 * weight_sum[lca(u, v)];
+        }
+
+        // u - v 間のパスの辺の本数 (長さ) を求める
+        int pathLength(size_t u, size_t v) {
+            return depth[u] + depth[v] - 2 * depth[lca(u, v)];
+        }
+
+    private:
+        void dfs(size_t cur, int p, int d, Weight w) {
+            depth[cur] = d;
+            weight_sum[cur] = w;
+            table[0][cur] = p;
+            for (const auto &e: G[cur]) {
+                if (e.to != p) {
+                    dfs(e.to, cur, d + 1, w + e.weight);
+                }
+            }
+        }
+    };
+    // }}}

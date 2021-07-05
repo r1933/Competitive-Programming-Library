@@ -1,0 +1,29 @@
+snippet detectCycle
+options head
+    // detectCycle {{{
+    template <class T, class Fn>
+    pair<intmax_t, intmax_t> detectCycle(const T& s, const Fn& fn) {
+        T tortoise = s;
+        T hare = s;
+        do {
+            tortoise = fn(tortoise);
+            hare = fn(fn(hare));
+        } while (tortoise != hare);
+
+        tortoise = s;
+        intmax_t mu = 0;
+        while (tortoise != hare) {
+            ++mu;
+            tortoise = fn(tortoise);
+            hare = fn(hare);
+        }
+
+        intmax_t lamda = 0;
+        do {
+            ++lamda;
+            hare = fn(hare);
+        } while (hare != tortoise);
+
+        return {mu, lamda};
+    }
+    // }}}

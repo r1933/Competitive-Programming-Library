@@ -1,0 +1,5 @@
+snippet rep_macro
+options head
+    #define rep(i, n) for (int64_t i = 0, i##_limit = (n); i < i##_limit; ++i)
+    #define reps(i, b, e) for (int64_t i = (b), i##_limit = (e); i <= i##_limit; ++i)
+    #define repr(i, b, e) for (int64_t i = (b), i##_limit = (e); i >= i##_limit; --i)

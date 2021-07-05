@@ -1,0 +1,15 @@
+snippet mul
+options head
+    // a * b を二分累乗法によって O(log b) で求める。
+    // mod m において m が非常に大きい時に有効。
+    template <class T>
+    T mul(const T& a, const intmax_t& b) {
+        T ret = 0;
+        T n = a;
+        for (intmax_t p = abs(b); p > 0; p >>= 1) {
+            if (p & 1) ret += n;
+            n += n;
+        }
+        if (b < 0) ret *= -1;
+        return ret;
+    }

@@ -1,0 +1,16 @@
+snippet binomial
+options head
+    template <class T>
+    T binomial(intmax_t n, intmax_t k) {
+        if (k < 0 || n < k) {
+            return 0;
+        }
+
+        T ret = 1;
+        for (intmax_t i = 1; i <= k; ++i) {
+            ret *= n--;
+            ret /= i;
+        }
+
+        return ret;
+    }

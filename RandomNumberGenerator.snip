@@ -1,0 +1,41 @@
+snippet random
+options head
+    namespace randoms { // {{{
+
+    mt19937 mt(random_device{}());
+
+    // [min_, max_] の乱数を生成
+    template <class Tp>
+    Tp random(Tp min_, Tp max_) {
+        return uniform_int_distribution<Tp>(min_, max_)(mt);
+    }
+
+    // dest に random(size_min, size_max) 回、random(value_min, value_max) を格納
+    template <class Iter, class Tp>
+    Iter randomValueContainer(Iter dest, size_t size_min, size_t size_max, Tp value_min, Tp value_max) {
+        auto size = random(size_min, size_max);
+        while (size--) {
+            *dest = random(value_min, value_max);
+            ++dest;
+        }
+        return dest;
+    }
+
+    // 要素数が random(size_min, size_max) の random(value_min, value_max) からなるコンテナを生成
+    template <class Container, class Tp>
+    Container randomValueContainer(size_t size_min, size_t size_max, Tp value_min, Tp value_max) {
+        Container ret;
+        randomValueContainer(back_inserter(ret), size_min, size_max, value_min, value_max);
+        return ret;
+    }
+
+    // [begin, end) の範囲のうちひとつをランダムに選んで返す
+    template <class Iter>
+    auto choice(Iter begin, Iter end) {
+        const auto i = random<size_t>(0, distance(begin, end) - 1);
+        return begin[i];
+    }
+
+    } // }}} namespace randoms
+
+    using namespace randoms;

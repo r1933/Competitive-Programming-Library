@@ -1,0 +1,18 @@
+snippet carmichaelFunction
+options head
+    // min m s.t. a ^ m = 1 (mod n)
+    // a, n are coprime
+    intmax_t carmichaelFunction(intmax_t n) {
+        const auto lcm = [](intmax_t a, intmax_t b) { return a / __gcd(a, b) * b; };
+        intmax_t ret = 1;
+        if (n % 8 == 0) n /= 2;
+        for (intmax_t i = 2; i * i <= n; ++i) {
+            if (n % i == 0) {
+                intmax_t t = i - 1;
+                for (n /= i; n % i == 0; n /= i) t *= i;
+                ret = lcm(ret, t);
+            }
+        }
+        if (n != 1) ret = lcm(ret, n - 1);
+        return ret;
+    }

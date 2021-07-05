@@ -1,0 +1,71 @@
+snippet Real
+options head
+    // Real {{{
+    const long double EPS = 1e-10;
+    const long double PI = acos(-1);
+
+    struct Real {
+        long double value;
+
+        Real(long double value = 0) : value(value) {}
+        Real(const Real& rhs) { value = rhs.value; }
+
+        Real operator+(const Real& rhs) const { return Real(value + rhs.value); }
+        Real& operator+=(const Real& rhs) { return value += rhs.value, *this; }
+        Real operator-(const Real& rhs) const { return Real(value - rhs.value); }
+        Real& operator-=(const Real& rhs) { return value -= rhs.value, *this; }
+        Real operator*(const Real& rhs) const { return Real(value * rhs.value); }
+        Real& operator*=(const Real& rhs) { return value *= rhs.value, *this; }
+        Real operator/(const Real& rhs) const { return Real(value / rhs.value); }
+        Real& operator/=(const Real& rhs) { return value /= rhs.value, *this; }
+        Real operator-() const { return Real(-value); }
+        Real& operator++() { return ++value, *this; }
+        Real& operator--() { return --value, *this; }
+        Real operator++(int) { Real tmp(value); return ++value, tmp; }
+        Real operator--(int) { Real tmp(value); return --value, tmp; }
+        bool operator==(const Real& rhs) const { return fabs(value - rhs.value) < EPS; }
+        bool operator!=(const Real& rhs) const { return !(*this == rhs); }
+        bool operator<(const Real& rhs) const { return (*this == rhs) ? false : value < rhs.value; }
+        bool operator>(const Real& rhs) const { return (*this == rhs) ? false : value > rhs.value; }
+        bool operator<=(const Real& rhs) const { return (*this == rhs) ? true : value < rhs.value; }
+        bool operator>=(const Real& rhs) const { return (*this == rhs) ? true : value > rhs.value; }
+        template <class T> explicit operator T() const { return static_cast<T>(value); }
+
+        friend istream& operator>>(istream& is, Real& rhs) {
+            is >> rhs.value;
+            return is;
+        }
+        friend ostream& operator<<(ostream& os, const Real& rhs) {
+            os << rhs.value;
+            return os;
+        }
+
+        friend Real pow(const Real& n, const Real& p) { return pow(n.value, p.value); }
+        friend Real pow(Real n, intmax_t p) {
+            Real ret = 1;
+            for (; p > 0; p >>= 1) {
+                if (p & 1) ret *= n;
+                n *= n;
+            }
+            return ret;
+        }
+        friend Real abs(const Real& rhs) { return abs(rhs.value); }
+        friend Real sin(const Real& rhs) { return sin(rhs.value); }
+        friend Real cos(const Real& rhs) { return cos(rhs.value); }
+        friend Real tan(const Real& rhs) { return tan(rhs.value); }
+        friend Real asin(const Real& rhs) { return asin(rhs.value); }
+        friend Real acos(const Real& rhs) { return acos(rhs.value); }
+        friend Real atan(const Real& rhs) { return atan(rhs.value); }
+        friend Real atan2(const Real& lhs, const Real& rhs) { return atan2(lhs.value, rhs.value); }
+        friend Real sqrt(const Real& rhs) { return sqrt(rhs.value); }
+        friend Real ceil(const Real& rhs) { return ceil(rhs.value); }
+        friend Real floor(const Real& rhs) { return floor(rhs.value); }
+        friend Real round(const Real& rhs) { return round(rhs.value); }
+        friend Real nextafter(const Real& x, const Real& y) { return nextafter(x.value, y.value); }
+        friend Real hypot(const Real& x, const Real& y) { return hypot(x.value, y.value); }
+        friend Real hypot(const Real& x, const Real& y, const Real& z) { return hypot(x.value, y.value, z.value); }
+    };
+
+    using real_t = Real;
+    real_t operator""_r(long double value) { return value; };
+    // }}}

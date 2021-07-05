@@ -1,0 +1,50 @@
+snippet CumulativeSum2D
+options head
+    // CumulativeSum2D {{{
+    template <class T>
+    class CumulativeSum2D {
+        vector<vector<T>> cumsum;
+
+    public:
+        CumulativeSum2D() {}
+        CumulativeSum2D(const size_t h, const size_t w) : cumsum(h + 1, vector<T>(w + 1)) {}
+
+        void build() {
+            const size_t h = cumsum.size(), w = cumsum[0].size();
+            for (size_t y = 1; y < h; ++y) {
+                for (size_t x = 1; x < w; ++x) {
+                    cumsum[y][x] += cumsum[y][x - 1] + cumsum[y - 1][x] - cumsum[y - 1][x - 1];
+                }
+            }
+        }
+
+        T sum(size_t sy, size_t sx, size_t gy, size_t gx) const {
+            sy++, sx++, gy++, gx++;
+            return cumsum[gy][gx] - cumsum[sy - 1][gx] - cumsum[gy][sx - 1] + cumsum[sy - 1][sx - 1];
+        }
+
+        T at(size_t y, size_t x) const {
+            return cumsum[y + 1][x + 1];
+        }
+
+        T& at(size_t y, size_t x) {
+            return cumsum[y + 1][x + 1];
+        }
+
+        void assign(const size_t h, const size_t w) {
+            cumsum.assign(h + 1, vector<T>(w + 1));
+        }
+
+        size_t height() const noexcept {
+            return cumsum.size() - 1;
+        }
+
+        size_t width() const noexcept {
+            return cumsum[0].size() - 1;
+        }
+
+        const auto& data() const noexcept {
+            return cumsum;
+        }
+    };
+    // }}}

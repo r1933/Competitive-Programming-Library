@@ -1,0 +1,16 @@
+snippet binomialTable
+options head
+    // binomial[n][k] := binomial(n, k) を動的計画法を用いて O(n^2) で前計算する。
+    // mod m において、m が素数でないときに有効。
+    template <class T>
+    auto binomialTable(intmax_t n) {
+        vector<vector<T>> binomialTable(n + 1);
+        for (intmax_t i = 0; i <= n; ++i) {
+            binomial[i].resize(i + 1);
+            for (intmax_t j = 0; j <= i; ++j) {
+                if (j == 0 || i == j) binomial[i][j] = 1;
+                else binomial[i][j] = binomial[i - 1][j - 1] + binomial[i - 1][j];
+            }
+        }
+        return binomial;
+    }

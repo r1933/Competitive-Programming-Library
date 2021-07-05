@@ -1,0 +1,39 @@
+snippet bellmanFord
+options head
+    // bellmanFord {{{
+    template <class Weight, class Compare = less<>>
+    vector<Weight> bellmanFord(const Graph<Weight> &G, const size_t src) {
+        const auto isBetter = Compare();
+        const Weight MAX = numeric_limits<Weight>::max();
+        const Weight MIN = numeric_limits<Weight>::min();
+        const Weight INF = (Compare()(MIN, MAX) ? MAX : MIN);
+
+        const auto grow = [&isBetter](Weight &a, const Weight &b) -> bool {
+            return isBetter(b, a) && (a = b, true);
+        };
+
+        const size_t V = G.size();
+
+        vector<Weight> dp(V, INF);
+        dp[src] = 0;
+
+        size_t loop;
+        bool updated = true;
+        for (loop = 0; updated && loop <= V; ++loop) {
+            updated = false;
+            for (size_t s = 0; s < V; ++s) {
+                if (dp[s] != INF) {
+                    for (const auto &e: G[s]) {
+                        updated |= grow(dp[e.to], dp[s] + e.weight);
+                    }
+                }
+            }
+        }
+
+        if (loop > V) {
+            return {};
+        } else {
+            return dp;
+        }
+    }
+    // }}}

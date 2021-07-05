@@ -1,0 +1,151 @@
+snippet Matrix
+options head
+    // Matrix {{{
+    template <class Tp>
+    struct Addition {
+        Tp operator()(const Tp& lhs, const Tp& rhs) {
+            return lhs + rhs;
+        }
+    };
+
+    // template <class Tp>
+    // struct Addition {
+    //     Tp operator()(const Tp& lhs, const Tp& rhs) {
+    //         return lhs | rhs;
+    //     }
+    // };
+
+    // template <class Tp>
+    // struct Addition {
+    //     Tp operator()(const Tp& lhs, const Tp& rhs) {
+    //         return lhs ^ rhs;
+    //     }
+    // };
+
+    template <class Tp>
+    struct Multiplication {
+        Tp operator()(const Tp& lhs, const Tp& rhs) {
+            return lhs * rhs;
+        }
+    };
+
+    // template <class Tp>
+    // struct Multiplication { // Change identity!!!!
+    //     Tp operator()(const Tp& lhs, const Tp& rhs) {
+    //         return lhs & rhs;
+    //     }
+    // };
+
+    template <class Tp, typename Add = Addition<Tp>, typename Mul = Multiplication<Tp>>
+    class Matrix {
+    private:
+        vector<vector<Tp>> A;
+        Add add;
+        Mul mul;
+
+    public:
+        Matrix() = default;
+        Matrix(size_t n, size_t m) : A(n, vector<Tp>(m, 0)) {}
+        Matrix(size_t n) : A(n, vector<Tp>(n, 0)) {}
+        Matrix(vector<vector<Tp>> A) : A(A) {}
+
+        size_t height() const {
+            return A.size();
+        }
+        size_t width() const {
+            return A[0].size();
+        }
+
+        vector<Tp>& operator[](size_t k) {
+            return A[k];
+        }
+        const vector<Tp>& operator[](size_t k) const {
+            return A[k];
+        }
+
+        static Matrix identity(size_t n) { // product
+            Matrix res(n);
+            for (size_t i = 0; i < n; ++i) res[i][i] = 1;
+            return res;
+        }
+        // static Matrix identity(size_t n) { // logical product
+        //     Matrix res(n);
+        //     for (size_t i = 0; i < n; ++i) res[i][i] = -1;
+        //     return res;
+        // }
+
+        Matrix& operator+=(const Matrix& B) {
+            const size_t n = height();
+            const size_t m = width();
+            assert(n == B.height() && m == B.width());
+            for (size_t i = 0; i < n; ++i) {
+                for (size_t j = 0; j < m; ++j) {
+                    A[i][j] += B[i][j];
+                }
+            }
+            return *this;
+        }
+        Matrix& operator-=(const Matrix& B) {
+            const size_t n = height();
+            const size_t m = width();
+            assert(n == B.height() && m == B.width());
+            for (size_t i = 0; i < n; ++i) {
+                for (size_t j = 0; j < m; ++j) {
+                    A[i][j] -= B[i][j];
+                }
+            }
+            return *this;
+        }
+        Matrix& operator*=(const Matrix& B) {
+            const size_t n = height();
+            const size_t m = width();
+            const size_t l = B.width();
+            assert(m == B.height());
+            vector<vector<Tp>> C(n, vector<Tp>(l, 0));
+            for (size_t i = 0; i < n; ++i) {
+                for (size_t j = 0; j < m; ++j) {
+                    for (size_t k = 0; k < l; ++k) {
+                        C[i][k] = add(C[i][k], mul(A[i][j], B[j][k]));
+                    }
+                }
+            }
+            A.swap(C);
+            return *this;
+        }
+        Matrix operator+(const Matrix& B) const {
+            return Matrix(A) += B;
+        }
+        Matrix operator-(const Matrix& B) const {
+            return Matrix(A) -= B;
+        }
+        Matrix operator*(const Matrix& B) const {
+            return Matrix(A) *= B;
+        }
+
+        Matrix pow(intmax_t e) const {
+            Matrix res = identity(height());
+            Matrix B(A);
+            while (e > 0) {
+                if (e & 1) res *= B;
+                B *= B;
+                e >>= 1;
+            }
+            return res;
+        }
+        Matrix pow(string e) const {
+            Matrix res = identity(height());
+            Matrix B(A);
+            for (const char c: e) {
+                res = res.pow(10) * B.pow(c - '0');
+            }
+            return res;
+        }
+
+        auto& data() {
+            return A;
+        }
+        const auto& data() const {
+            return A;
+        }
+    };
+    // }}}

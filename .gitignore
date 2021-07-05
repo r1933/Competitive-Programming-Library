@@ -1,0 +1,7 @@
+__pycache__/*
+*.pyc
+a.out
+use.txt
+generator.py
+reader.py
+hoge.py
