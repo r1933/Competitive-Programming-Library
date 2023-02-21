@@ -1,0 +1,142 @@
+snippet plane_sweep_intersection_detector
+options head
+    // plane_sweep_intersection_detector {{{
+    enum Type { SEGMENT_START, SEGMENT_END, INTERSECTION };
+
+    struct Event {
+        Type type; // 点の種類 (始点 or 終点 or 交点)
+        Point p;   // 点の座標
+        Segment s1; // 始点 or 終点 => その線分, 交点 => 交差する 2 線分のうち片方
+        Segment s2; // 始点 or 終点 => Segment::null, 交点 => 交差する 2 線分のうちもう片方
+
+        Event(Type type, Point p, Segment s1, Segment s2)
+            : type(type), p(p), s1(s1), s2(s2) {}
+
+        bool operator>(const Event& e) const {
+            if (this->p.y == e.p.y) {
+                return this->p.x > e.p.x;
+            } else {
+                return this->p.y > e.p.y;
+            }
+        }
+    };
+
+    // 平面操作法により線分の交点を列挙する O(N log N)
+    // 走査線を下から上に向かって (離散的に) 移動させる。
+    vector<Point> plane_sweep_intersection_detector(vector<Segment> ss) {
+        MinHeap<Event> event_que;
+        for (const auto s: ss) {
+            // 線分の端点のうち下にある方を始点、上にある方を終点とする。
+            // 線分が x 軸に平行なときは左の端点を始点とする。
+            if (s.p1.y < s.p2.y || (s.p1.y == s.p2.y && s.p1.x < s.p2.x)) {
+                event_que.push(Event(SEGMENT_START, s.p1, s, Segment::null));
+                event_que.push(Event(SEGMENT_END, s.p2, s, Segment::null));
+            } else {
+                event_que.push(Event(SEGMENT_START, s.p2, s, Segment::null));
+                event_que.push(Event(SEGMENT_END, s.p1, s, Segment::null));
+            }
+        }
+
+        Line sweep_line;
+        Line above_line;
+
+        const auto set_y = [&](real_t y) -> void {
+            sweep_line = Line(Point(0, y), Point(1, y));
+            above_line = Line(Point(0, y + 0.1), Point(1, y + 0.1));
+        };
+        set_y(0);
+
+        const auto compare_by_line = [&](Segment s1, Segment s2, Line l) {
+            const Point p1 = getcrossPointSL(s1, l);
+            const Point p2 = getcrossPointSL(s2, l);
+            const real_t x1 = (p1 != Point::null) ? p1.x : s1.p1.x;
+            const real_t x2 = (p2 != Point::null) ? p2.x : s2.p1.x;
+            return x1 - x2;
+        };
+
+        const auto comp = [&](Segment s1, Segment s2) {
+            real_t c = compare_by_line(s1, s2, sweep_line);
+            if (c == 0) {
+                c = compare_by_line(s1, s2, above_line);
+            }
+            return c < 0;
+        };
+
+        const auto check_intersection = [&](Segment left, Segment right,
+                                            real_t sweep_y) -> void {
+            if (left == Segment::null || right == Segment::null) {
+                return;
+            }
+            const Point p = getcrossPointSS(left, right);
+            if (p != Point::null && p.y >= sweep_y) {
+                event_que.push(Event(INTERSECTION, p, left, right));
+            }
+        };
+
+        set<Segment, decltype(comp)> S(comp);
+        vector<Point> res;
+        while (!event_que.empty()) {
+            const auto event = event_que.top();
+            event_que.pop();
+
+            const real_t sweep_y = event.p.y;
+            switch (event.type) {
+                case SEGMENT_START: {
+                    set_y(sweep_y);
+                    const Segment ns = event.s1;
+                    S.insert(ns);
+                    const auto pos = S.find(ns);
+                    const Segment left = (pos == S.begin()) ? Segment::null : *prev(pos);
+                    const Segment right = (pos == prev(S.end())) ? Segment::null : *next(pos);
+                    check_intersection(left, ns, sweep_y);
+                    check_intersection(ns, right, sweep_y);
+                    break;
+                }
+                case INTERSECTION: {
+                    const Segment left = event.s1;
+                    const Segment right = event.s2;
+                    res.emplace_back(event.p);
+                    const auto pos_left = S.find(left);
+                    const auto pos_right = S.find(right);
+                    const Segment more_left = (S.empty() || pos_left == S.begin()) ?
+                                                  Segment::null :
+                                                  *prev(pos_left);
+                    const Segment more_right = (S.empty() || pos_right == prev(S.end())) ?
+                                                   Segment::null :
+                                                   *next(pos_right);
+                    S.erase(left);
+                    S.erase(right);
+                    set_y(sweep_y);
+                    if (comp(left, right)) {
+                        set_y(sweep_y + 0.001);
+                    }
+                    S.insert(left);
+                    S.insert(right);
+                    check_intersection(more_left, right, sweep_y);
+                    check_intersection(left, more_right, sweep_y);
+                    break;
+                }
+                case SEGMENT_END: {
+                    if (!S.empty()) {
+                        const Segment es = event.s1;
+                        const auto pos = S.find(es);
+                        const Segment left = (pos == S.begin()) ? Segment::null : *prev(pos);
+                        const Segment right =
+                            (pos == prev(S.end())) ? Segment::null : *next(pos);
+                        check_intersection(left, right, sweep_y);
+                        S.erase(es);
+                    }
+                    set_y(sweep_y);
+                    break;
+                }
+            }
+        }
+
+        if (!res.empty()) {
+            sort(res.begin(), res.end());
+            res.erase(unique(res.begin(), res.end()), res.end());
+        }
+        argsort(res);
+        return res;
+    }
+    // }}}

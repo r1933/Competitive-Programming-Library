@@ -1,50 +1,48 @@
 snippet CumulativeSum2D
 options head
     // CumulativeSum2D {{{
+    // 0-indexed
     template <class T>
     class CumulativeSum2D {
-        vector<vector<T>> cumsum;
+        vector<vector<T>> csum;
 
     public:
         CumulativeSum2D() {}
-        CumulativeSum2D(const size_t h, const size_t w) : cumsum(h + 1, vector<T>(w + 1)) {}
+        CumulativeSum2D(const size_t h, const size_t w) : csum(h + 1, vector<T>(w + 1)) {}
+
+        void add(size_t r, size_t c, T v) {
+            csum[r + 1][c + 1] += v;
+        }
 
         void build() {
-            const size_t h = cumsum.size(), w = cumsum[0].size();
-            for (size_t y = 1; y < h; ++y) {
-                for (size_t x = 1; x < w; ++x) {
-                    cumsum[y][x] += cumsum[y][x - 1] + cumsum[y - 1][x] - cumsum[y - 1][x - 1];
+            const size_t h = csum.size(), w = csum[0].size();
+            for (size_t r = 1; r < h; ++r) {
+                for (size_t c = 1; c < w; ++c) {
+                    csum[r][c] += csum[r][c - 1] + csum[r - 1][c] - csum[r - 1][c - 1];
                 }
             }
         }
 
-        T sum(size_t sy, size_t sx, size_t gy, size_t gx) const {
-            sy++, sx++, gy++, gx++;
-            return cumsum[gy][gx] - cumsum[sy - 1][gx] - cumsum[gy][sx - 1] + cumsum[sy - 1][sx - 1];
-        }
-
-        T at(size_t y, size_t x) const {
-            return cumsum[y + 1][x + 1];
-        }
-
-        T& at(size_t y, size_t x) {
-            return cumsum[y + 1][x + 1];
+        // sum of (r, c) s.t. sr <= r <= tr, sc <= c <= tc
+        T sum(size_t sr, size_t tr, size_t sc, size_t tc) const {
+            sr++, tr++, sc++, tc++;
+            return csum[tr][tc] - csum[sr - 1][tc] - csum[tr][sc - 1] + csum[sr - 1][sc - 1];
         }
 
         void assign(const size_t h, const size_t w) {
-            cumsum.assign(h + 1, vector<T>(w + 1));
+            csum.assign(h + 1, vector<T>(w + 1));
         }
 
         size_t height() const noexcept {
-            return cumsum.size() - 1;
+            return csum.size() - 1;
         }
 
         size_t width() const noexcept {
-            return cumsum[0].size() - 1;
+            return csum[0].size() - 1;
         }
 
         const auto& data() const noexcept {
-            return cumsum;
+            return csum;
         }
     };
     // }}}

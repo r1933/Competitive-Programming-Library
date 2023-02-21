@@ -1,0 +1,102 @@
+snippet Dinic
+options head
+    // Dinic {{{
+    template <class T>
+    struct Dinic {
+        const T INF;
+
+        struct edge {
+            size_t to;
+            T cap;
+            size_t rev;
+            bool isrev;
+            int idx;
+
+            explicit edge(size_t to, T cap, size_t rev, bool isrev, size_t idx)
+                : to(to), cap(cap), rev(rev), isrev(isrev), idx(idx) {}
+        };
+
+        vector<vector<edge>> graph;
+        vector<int> min_cost;
+        vector<size_t> iter;
+
+        explicit Dinic(size_t V) : INF(numeric_limits<T>::max()), graph(V) {}
+
+        void connect(size_t from, size_t to, T cap, int idx = -1) {
+            graph[from].emplace_back(to, cap, graph[to].size(), false, idx);
+            graph[to].emplace_back(from, 0, graph[from].size() - 1, true, idx);
+        }
+
+        bool build_augment_path(size_t s, size_t t) {
+            min_cost.assign(graph.size(), -1);
+            queue<size_t> que;
+            min_cost[s] = 0;
+            que.push(s);
+            while (!que.empty() && min_cost[t] == -1) {
+                size_t p = que.front();
+                que.pop();
+                for (const auto e: graph[p]) {
+                    if (e.cap > 0 && min_cost[e.to] == -1) {
+                        min_cost[e.to] = min_cost[p] + 1;
+                        que.push(e.to);
+                    }
+                }
+            }
+            return min_cost[t] != -1;
+        }
+
+        T find_min_dist_augment_path(size_t idx, const size_t t, T flow) {
+            if (idx == t) return flow;
+            for (auto&& e: graph[idx]) {
+                if (e.cap > 0 && min_cost[idx] < min_cost[e.to]) {
+                    T d = find_min_dist_augment_path(e.to, t, min(flow, e.cap));
+                    if (d > 0) {
+                        e.cap -= d;
+                        graph[e.to][e.rev].cap += d;
+                        return d;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        T max_flow(size_t s, size_t t) {
+            T flow = 0;
+            while (build_augment_path(s, t)) {
+                iter.assign(graph.size(), 0);
+                T f;
+                while ((f = find_min_dist_augment_path(s, t, INF)) > 0) flow += f;
+            }
+            return flow;
+        }
+
+        void output() {
+            for (int i = 0; i < graph.size(); i++) {
+                for (auto& e: graph[i]) {
+                    if (e.isrev) continue;
+                    auto& rev_e = graph[e.to][e.rev];
+                    cout << i << "->" << e.to << " (flow: " << rev_e.cap << "/"
+                         << e.cap + rev_e.cap << ")" << endl;
+                }
+            }
+        }
+
+        vector<bool> min_cut(size_t s) {
+            vector<bool> used(graph.size());
+            queue<int> que;
+            que.emplace(s);
+            used[s] = true;
+            while (!que.empty()) {
+                size_t p = que.front();
+                que.pop();
+                for (const auto e: graph[p]) {
+                    if (e.cap > 0 && !used[e.to]) {
+                        used[e.to] = true;
+                        que.emplace(e.to);
+                    }
+                }
+            }
+            return used;
+        }
+    };
+    // }}}

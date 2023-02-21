@@ -1,0 +1,16 @@
+snippet congruence_equation
+options head
+    // congruence_equation {{{
+    // solve ax ≡ b (mod m)
+    pair<intmax_t, intmax_t> congruence_equation(intmax_t a, intmax_t b, intmax_t m) {
+        if (b % gcd(a, m) != 0) return make_pair(0, 0);
+        while (gcd(a, m) != 1) {
+            m /= gcd(a, m);
+            const intmax_t g = gcd(a, b);
+            a /= g, b /= g;
+        }
+        using value_type = ModInt<0>;
+        value_type::setModulo(m);
+        return make_pair(intmax_t(value_type(b) / a), m);
+    }
+    // }}}

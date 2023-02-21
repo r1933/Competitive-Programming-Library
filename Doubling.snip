@@ -1,0 +1,90 @@
+snippet Doubling
+options head
+    // Doubling {{{
+    // 重み付き => Doubling(n, nex, set, op, unity, (LOG))
+    // 重みなし => Doubling(n, nex, (LOG))
+    template <class Monoid = std::monostate, class Op = std::monostate>
+    class Doubling {
+        const Op op;
+        const Monoid unity;
+        std::vector<std::vector<std::pair<size_t, Monoid>>> table;
+
+    public:
+        Doubling() = default;
+
+        template <class Nex, class Set>
+        explicit Doubling(const size_t n, const Nex &nex, const Set &set, const Op &op,
+                          const Monoid unity, const size_t LOG = 63)
+            : op(op), unity(unity) {
+            table.resize(LOG);
+            for (size_t k = 0; k < LOG; ++k) {
+                table[k].resize(n);
+            }
+            for (size_t i = 0; i < n; ++i) {
+                table[0][i] = {nex(i), Monoid(set(i))};
+            }
+            for (size_t k = 0; k < LOG - 1; ++k) {
+                for (size_t i = 0; i < n; ++i) {
+                    const auto &[next_pos1, prod_value1] = table[k][i];
+                    const auto &[next_pos2, prod_value2] = table[k][next_pos1];
+                    table[k + 1][i] = {next_pos2, op(prod_value1, prod_value2)};
+                }
+            }
+        }
+
+        pair<size_t, Monoid> get(size_t start_pos, uint64_t K) const {
+            size_t pos = start_pos;
+            Monoid val = unity;
+            for (size_t k = 0; K > 0; ++k, K >>= 1) {
+                if (K & 1) {
+                    const auto &[next_pos, prod_value] = table[k][pos];
+                    pos = next_pos;
+                    val = op(val, prod_value);
+                }
+            }
+            return {pos, val};
+        }
+
+        size_t get_pos(size_t start_pos, uint64_t K) const {
+            return get(start_pos, K).first;
+        }
+
+        Monoid get_value(size_t start_pos, uint64_t K) const {
+            return get(start_pos, K).second;
+        }
+    };
+
+    template <>
+    class Doubling<> {
+        std::vector<std::vector<size_t>> table;
+
+    public:
+        Doubling() = default;
+
+        template <class Nex>
+        explicit Doubling(const size_t n, const Nex &nex, const size_t LOG = 63) {
+            table.resize(LOG);
+            for (size_t k = 0; k < LOG; ++k) {
+                table[k].resize(n);
+            }
+            for (size_t i = 0; i < n; ++i) {
+                table[0][i] = nex(i);
+            }
+            for (size_t k = 0; k < LOG - 1; ++k) {
+                for (size_t i = 0; i < n; ++i) {
+                    table[k + 1][i] = table[k][table[k][i]];
+                }
+            }
+        }
+
+        size_t get_pos(size_t start_pos, uint64_t K) const {
+            size_t res = start_pos;
+            for (size_t k = 0; K > 0; ++k, K >>= 1) {
+                if (K & 1) {
+                    res = table[k][res];
+                }
+            }
+            return res;
+        }
+    };
+    // }}}

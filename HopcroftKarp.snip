@@ -9,7 +9,7 @@ options head
 
         HopcroftKarp(int n, int m) : graph(n), match(m, -1), used(n) {}
 
-        void add_edge(size_t u, size_t v) {
+        void connect(size_t u, size_t v) {
             graph[u].push_back(v);
         }
 

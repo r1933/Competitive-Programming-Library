@@ -20,28 +20,73 @@ options head
         long double value;
 
         Real(long double value = 0) : value(value) {}
-        Real(const Real& rhs) { value = rhs.value; }
+        Real(const Real& rhs) {
+            value = rhs.value;
+        }
 
-        Real operator+(const Real& rhs) const { return Real(value + rhs.value); }
-        Real& operator+=(const Real& rhs) { return value += rhs.value, *this; }
-        Real operator-(const Real& rhs) const { return Real(value - rhs.value); }
-        Real& operator-=(const Real& rhs) { return value -= rhs.value, *this; }
-        Real operator*(const Real& rhs) const { return Real(value * rhs.value); }
-        Real& operator*=(const Real& rhs) { return value *= rhs.value, *this; }
-        Real operator/(const Real& rhs) const { return Real(value / rhs.value); }
-        Real& operator/=(const Real& rhs) { return value /= rhs.value, *this; }
-        Real operator-() const { return Real(-value); }
-        Real& operator++() { return ++value, *this; }
-        Real& operator--() { return --value, *this; }
-        Real operator++(int) { Real tmp(value); return ++value, tmp; }
-        Real operator--(int) { Real tmp(value); return --value, tmp; }
-        bool operator==(const Real& rhs) const { return fabs(value - rhs.value) < EPS; }
-        bool operator!=(const Real& rhs) const { return !(*this == rhs); }
-        bool operator<(const Real& rhs) const { return (*this == rhs) ? false : value < rhs.value; }
-        bool operator>(const Real& rhs) const { return (*this == rhs) ? false : value > rhs.value; }
-        bool operator<=(const Real& rhs) const { return (*this == rhs) ? true : value < rhs.value; }
-        bool operator>=(const Real& rhs) const { return (*this == rhs) ? true : value > rhs.value; }
-        template <class T> explicit operator T() const { return static_cast<T>(value); }
+        Real operator+(const Real& rhs) const {
+            return Real(value + rhs.value);
+        }
+        Real& operator+=(const Real& rhs) {
+            return value += rhs.value, *this;
+        }
+        Real operator-(const Real& rhs) const {
+            return Real(value - rhs.value);
+        }
+        Real& operator-=(const Real& rhs) {
+            return value -= rhs.value, *this;
+        }
+        Real operator*(const Real& rhs) const {
+            return Real(value * rhs.value);
+        }
+        Real& operator*=(const Real& rhs) {
+            return value *= rhs.value, *this;
+        }
+        Real operator/(const Real& rhs) const {
+            return Real(value / rhs.value);
+        }
+        Real& operator/=(const Real& rhs) {
+            return value /= rhs.value, *this;
+        }
+        Real operator-() const {
+            return Real(-value);
+        }
+        Real& operator++() {
+            return ++value, *this;
+        }
+        Real& operator--() {
+            return --value, *this;
+        }
+        Real operator++(int) {
+            Real tmp(value);
+            return ++value, tmp;
+        }
+        Real operator--(int) {
+            Real tmp(value);
+            return --value, tmp;
+        }
+        bool operator==(const Real& rhs) const {
+            return fabs(value - rhs.value) < EPS;
+        }
+        bool operator!=(const Real& rhs) const {
+            return !(*this == rhs);
+        }
+        bool operator<(const Real& rhs) const {
+            return (*this == rhs) ? false : value < rhs.value;
+        }
+        bool operator>(const Real& rhs) const {
+            return (*this == rhs) ? false : value > rhs.value;
+        }
+        bool operator<=(const Real& rhs) const {
+            return (*this == rhs) ? true : value < rhs.value;
+        }
+        bool operator>=(const Real& rhs) const {
+            return (*this == rhs) ? true : value > rhs.value;
+        }
+        template <class T>
+            explicit operator T() const {
+                return static_cast<T>(value);
+            }
 
         friend istream& operator>>(istream& is, Real& rhs) {
             is >> rhs.value;
@@ -52,7 +97,9 @@ options head
             return os;
         }
 
-        friend Real pow(const Real& n, const Real& p) { return pow(n.value, p.value); }
+        friend Real pow(const Real& n, const Real& p) {
+            return pow(n.value, p.value);
+        }
         friend Real pow(Real n, intmax_t p) {
             Real ret = 1;
             for (; p > 0; p >>= 1) {
@@ -61,41 +108,101 @@ options head
             }
             return ret;
         }
-        friend Real abs(const Real& rhs) { return abs(rhs.value); }
-        friend Real sin(const Real& rhs) { return sin(rhs.value); }
-        friend Real cos(const Real& rhs) { return cos(rhs.value); }
-        friend Real tan(const Real& rhs) { return tan(rhs.value); }
-        friend Real asin(const Real& rhs) { return asin(rhs.value); }
-        friend Real acos(const Real& rhs) { return acos(rhs.value); }
-        friend Real atan(const Real& rhs) { return atan(rhs.value); }
-        friend Real atan2(const Real& lhs, const Real& rhs) { return atan2(lhs.value, rhs.value); }
-        friend Real sqrt(const Real& rhs) { return sqrt(rhs.value); }
-        friend Real ceil(const Real& rhs) { return ceil(rhs.value); }
-        friend Real floor(const Real& rhs) { return floor(rhs.value); }
-        friend Real round(const Real& rhs) { return round(rhs.value); }
-        friend Real hypot(const Real& x, const Real& y) { return hypot(x.value, y.value); }
-        friend Real hypot(const Real& x, const Real& y, const Real& z) { return hypot(x.value, y.value, z.value); }
+        friend Real abs(const Real& rhs) {
+            return abs(rhs.value);
+        }
+        friend Real sin(const Real& rhs) {
+            return sin(rhs.value);
+        }
+        friend Real cos(const Real& rhs) {
+            return cos(rhs.value);
+        }
+        friend Real tan(const Real& rhs) {
+            return tan(rhs.value);
+        }
+        friend Real asin(const Real& rhs) {
+            return asin(rhs.value);
+        }
+        friend Real acos(const Real& rhs) {
+            return acos(rhs.value);
+        }
+        friend Real atan(const Real& rhs) {
+            return atan(rhs.value);
+        }
+        friend Real atan2(const Real& lhs, const Real& rhs) {
+            return atan2(lhs.value, rhs.value);
+        }
+        friend Real sqrt(const Real& rhs) {
+            return sqrt(rhs.value);
+        }
+        friend Real ceil(const Real& rhs) {
+            return ceil(rhs.value);
+        }
+        friend Real floor(const Real& rhs) {
+            return floor(rhs.value);
+        }
+        friend Real round(const Real& rhs) {
+            return round(rhs.value);
+        }
+        friend Real hypot(const Real& x, const Real& y) {
+            return hypot(x.value, y.value);
+        }
+        friend Real hypot(const Real& x, const Real& y, const Real& z) {
+            return hypot(x.value, y.value, z.value);
+        }
+        friend bool isnan(const Real& rhs) {
+            return isnan(rhs.value);
+        }
     };
 
     using real_t = Real;
-    real_t operator""_r(long double value) { return value; };
+    real_t operator""_r(long double value) {
+        return value;
+    };
 
     struct Point {
         real_t x, y;
 
-        Point(real_t x = 0, real_t y = 0) : x(x), y(y) {}
+        explicit Point(real_t x = 0, real_t y = 0) : x(x), y(y) {}
 
-        Point operator+(const Point& rhs) const { return Point(x + rhs.x, y + rhs.y); }
-        Point operator-(const Point& rhs) const { return Point(x - rhs.x, y - rhs.y); }
-        Point operator*(const real_t& rhs) const { return Point(x * rhs, y * rhs); }
-        Point operator/(const real_t& rhs) const { return Point(x / rhs, y / rhs); }
-        Point operator-() const { return Point(-x, -y); }
-        bool operator==(const Point& rhs) const { return x == rhs.x && y == rhs.y; }
-        bool operator!=(const Point& rhs) const { return !(*this == rhs); }
-        bool operator<(const Point& rhs) const { return (x == rhs.x) ? y < rhs.y : x < rhs.x; }
-        bool operator>(const Point& rhs) const { return (x == rhs.x) ? y > rhs.y : x > rhs.x; }
-        bool operator<=(const Point& rhs) const { return (*this == rhs) ? true : *this < rhs; }
-        bool operator>=(const Point& rhs) const { return (*this == rhs) ? true : *this > rhs; }
+        static const Point null;
+
+        bool isnull(const Point& p1) const {
+            return isnan(p1.x) && isnan(p1.y);
+        }
+        Point operator+(const Point& rhs) const {
+            return Point(x + rhs.x, y + rhs.y);
+        }
+        Point operator-(const Point& rhs) const {
+            return Point(x - rhs.x, y - rhs.y);
+        }
+        Point operator*(const real_t& rhs) const {
+            return Point(x * rhs, y * rhs);
+        }
+        Point operator/(const real_t& rhs) const {
+            return Point(x / rhs, y / rhs);
+        }
+        Point operator-() const {
+            return Point(-x, -y);
+        }
+        bool operator==(const Point& rhs) const {
+            return (x == rhs.x && y == rhs.y) || (isnull(*this) && isnull(rhs));
+        }
+        bool operator!=(const Point& rhs) const {
+            return !(*this == rhs);
+        }
+        bool operator<(const Point& rhs) const {
+            return (x == rhs.x) ? y < rhs.y : x < rhs.x;
+        }
+        bool operator>(const Point& rhs) const {
+            return (x == rhs.x) ? y > rhs.y : x > rhs.x;
+        }
+        bool operator<=(const Point& rhs) const {
+            return (*this == rhs) ? true : *this < rhs;
+        }
+        bool operator>=(const Point& rhs) const {
+            return (*this == rhs) ? true : *this > rhs;
+        }
 
         friend istream& operator>>(istream& is, Point& rhs) {
             is >> rhs.x >> rhs.y;
@@ -107,21 +214,40 @@ options head
         }
     };
 
+    const Point Point::null = Point(nan(""), nan(""));
+
     using Vector = Point;
     using Polygon = vector<Point>;
 
-    real_t norm(const Vector& a) { return a.x * a.x + a.y * a.y; }
-    real_t len(const Vector& a) { return sqrt(norm(a)); }
-    real_t dot(const Vector& a, const Vector& b) { return a.x * b.x + a.y * b.y; }
-    real_t cross(const Vector& a, const Vector& b) { return a.x * b.y - a.y * b.x; }
+    real_t norm(const Vector& a) {
+        return a.x * a.x + a.y * a.y;
+    }
+    real_t len(const Vector& a) {
+        return sqrt(norm(a));
+    }
+    real_t dot(const Vector& a, const Vector& b) {
+        return a.x * b.x + a.y * b.y;
+    }
+    real_t cross(const Vector& a, const Vector& b) {
+        return a.x * b.y - a.y * b.x;
+    }
 
     struct Segment {
         Point p1, p2;
 
-        Segment(Point p1 = Point(), Point p2 = Point()) : p1(p1), p2(p2) {}
+        explicit Segment(Point p1 = Point(), Point p2 = Point()) : p1(p1), p2(p2) {}
 
-        bool operator==(const Segment& rhs) const { return p1 == rhs.p1 && p2 == rhs.p2; }
-        bool operator!=(const Segment& rhs) const { return !(*this == rhs); }
+        static const Segment null;
+
+        bool isnull(const Segment& rhs) const {
+            return rhs.p1 == Point::null && rhs.p2 == Point::null;
+        }
+        bool operator==(const Segment& rhs) const {
+            return (p1 == rhs.p1 && p2 == rhs.p2) || (isnull(*this) && isnull(rhs));
+        }
+        bool operator!=(const Segment& rhs) const {
+            return !(*this == rhs);
+        }
 
         friend istream& operator>>(istream& is, Segment& rhs) {
             is >> rhs.p1 >> rhs.p2;
@@ -133,6 +259,8 @@ options head
         }
     };
 
+    const Segment Segment::null = Segment(Point::null, Point::null);
+
     using Line = Segment;
 
     struct Circle {
@@ -141,8 +269,12 @@ options head
 
         Circle(Point c = Point(), real_t r = 0) : c(c), r(r) {}
 
-        bool operator==(const Circle& rhs) const { return c == rhs.c && r == rhs.r; }
-        bool operator!=(const Circle& rhs) const { return !(*this == rhs); }
+        bool operator==(const Circle& rhs) const {
+            return c == rhs.c && r == rhs.r;
+        }
+        bool operator!=(const Circle& rhs) const {
+            return !(*this == rhs);
+        }
 
         friend istream& operator>>(istream& is, Circle& rhs) {
             is >> rhs.c >> rhs.r;
@@ -154,7 +286,13 @@ options head
         }
     };
 
-    real_t len(const Segment& s) { return len(s.p1 - s.p2); }
+    real_t norm(const Segment& s) {
+        return norm(s.p1 - s.p2);
+    }
+
+    real_t len(const Segment& s) {
+        return len(s.p1 - s.p2);
+    }
 
     bool isParallel(const Vector& a, const Vector& b) {
         return cross(a, b) == 0.0_r;
@@ -204,6 +342,7 @@ options head
     int ccw(const Point& p0, const Point& p1, const Point& p2);
     bool intersectSS(const Point& p1, const Point& p2, const Point& p3, const Point& p4);
     bool intersectSS(const Segment& s1, const Segment& s2);
+    bool intersectSL(const Segment& s, const Line& l);
     bool intersectSG(const Segment& s, const Polygon& g);
     int intersectCC(Circle c1, Circle c2);
     bool intersectLC(const Line& l, const Circle& c);
@@ -214,14 +353,16 @@ options head
     real_t getDistanceSS(const Segment& s1, const Segment& s2);
     Point getcrossPointSS(const Segment& s1, const Segment& s2);
     Point getcrossPointLL(const Line& l1, const Line& l2);
+    Point getcrossPointSL(const Segment& s, const Line& l);
     Polygon getcrossPointLC(const Line& l, const Circle& c);
     Polygon getcrossPointSC(const Segment& s, const Circle& c);
-    Polygon getcrossPointCC(const Circle &c1, const Circle &c2);
+    Polygon getcrossPointCC(const Circle& c1, const Circle& c2);
     bool isConvex(const Polygon& g);
     int contains(const Polygon& g, const Point& p);
     int convexContains(const Polygon& g, const Point& p);
     Polygon convexFull(Polygon g, bool ONSEG);
     real_t area(const Polygon& g);
+    void argsort(vector<Point>& ps);
 
     int ccw(const Point& p0, const Point& p1, const Point& p2) {
         Vector a = p1 - p0;
@@ -234,11 +375,26 @@ options head
     }
 
     bool intersectSS(const Point& p1, const Point& p2, const Point& p3, const Point& p4) {
-        return ccw(p1, p2, p3) * ccw(p1, p2, p4) <= 0 && ccw(p3, p4, p1) * ccw(p3, p4, p2) <= 0;
+        return ccw(p1, p2, p3) * ccw(p1, p2, p4) <= 0 &&
+            ccw(p3, p4, p1) * ccw(p3, p4, p2) <= 0;
     }
 
     bool intersectSS(const Segment& s1, const Segment& s2) {
         return intersectSS(s1.p1, s1.p2, s2.p1, s2.p2);
+    }
+
+    bool intersectSL(const Segment& s, const Line& l) {
+        if (s == Segment::null) return false;
+        const real_t x1 = l.p1.x;
+        const real_t y1 = l.p1.y;
+        const real_t x2 = l.p2.x;
+        const real_t y2 = l.p2.y;
+        const real_t a = y2 - y1;
+        const real_t b = -(x2 - x1);
+        const real_t c = -(a * x1 + b * y1);
+        const real_t t1 = a * s.p1.x + b * s.p1.y + c;
+        const real_t t2 = a * s.p2.x + b * s.p2.y + c;
+        return (t1 >= 0 && t2 <= 0) || (t1 <= 0 && t2 >= 0);
     }
 
     bool intersectSG(const Segment& s, const Polygon& g) {
@@ -299,11 +455,27 @@ options head
     }
 
     Point getcrossPointSS(const Segment& s1, const Segment& s2) {
+        if (!intersectSS(s1, s2)) return Point::null;
         Vector base = s2.p2 - s2.p1;
         const real_t d1 = abs(cross(base, s1.p1 - s2.p1));
         const real_t d2 = abs(cross(base, s1.p2 - s2.p1));
         const real_t t = d1 / (d1 + d2);
         return s1.p1 + (s1.p2 - s1.p1) * t;
+    }
+
+    Point getcrossPointLL(const Line& l1, const Line& l2) {
+        if (isParallel(l1, l2)) return Point::null;
+        real_t a = cross(l1.p2 - l1.p1, l2.p2 - l2.p1);
+        real_t b = cross(l1.p2 - l1.p1, l1.p2 - l2.p1);
+        if (a == 0 && b == 0) return l2.p1;
+        return l2.p1 + (l2.p2 - l2.p1) * (b / a);
+    }
+
+    Point getcrossPointSL(const Segment& s, const Line& l) {
+        if (!intersectSL(s, l)) {
+            return Point::null;
+        }
+        return getcrossPointLL(s, l);
     }
 
     Polygon getcrossPointLC(const Line& l, const Circle& c) {
@@ -351,9 +523,7 @@ options head
     }
 
     // OUT:0 ON:1 IN:2
-    enum {
-        OUT, ON, IN
-    };
+    enum { OUT, ON, IN };
 
     int contains(const Polygon& g, const Point& p) {
         const size_t N = g.size();
@@ -375,11 +545,15 @@ options head
         while (r - l > 1) {
             const size_t m = (l + r) / 2;
             if (cross(g[l] - G, g[m] - G) > 0.0_r) {
-                if (cross(g[l] - G, p - G) > 0.0_r && cross(g[m] - G, p - G) < 0.0_r) r = m;
-                else l = m;
+                if (cross(g[l] - G, p - G) > 0.0_r && cross(g[m] - G, p - G) < 0.0_r)
+                    r = m;
+                else
+                    l = m;
             } else {
-                if (cross(g[l] - G, p - G) < 0.0_r && cross(g[m] - G, p - G) > 0.0_r) l = m;
-                else r = m;
+                if (cross(g[l] - G, p - G) < 0.0_r && cross(g[m] - G, p - G) > 0.0_r)
+                    l = m;
+                else
+                    r = m;
             }
         }
         r %= N;
@@ -400,26 +574,30 @@ options head
 
         if (ONSEG) {
             for (int i = 2; i < g.size(); ++i) {
-                for (int n = u.size(); n >= 2 && ccw(u[n - 2], u[n - 1], g[i]) == CCW_COUNTER_CLOCKWISE; --n) {
+                for (int n = u.size();
+                     n >= 2 && ccw(u[n - 2], u[n - 1], g[i]) == CCW_COUNTER_CLOCKWISE; --n) {
                     u.pop_back();
                 }
                 u.emplace_back(g[i]);
             }
             for (int i = g.size() - 3; i >= 0; --i) {
-                for (int n = l.size(); n >= 2 && ccw(l[n - 2], l[n - 1], g[i]) == CCW_COUNTER_CLOCKWISE; --n) {
+                for (int n = l.size();
+                     n >= 2 && ccw(l[n - 2], l[n - 1], g[i]) == CCW_COUNTER_CLOCKWISE; --n) {
                     l.pop_back();
                 }
                 l.emplace_back(g[i]);
             }
         } else {
             for (int i = 2; i < g.size(); ++i) {
-                for (int n = u.size(); n >= 2 && ccw(u[n - 2], u[n - 1], g[i]) != CCW_CLOCKWISE; --n) {
+                for (int n = u.size();
+                     n >= 2 && ccw(u[n - 2], u[n - 1], g[i]) != CCW_CLOCKWISE; --n) {
                     u.pop_back();
                 }
                 u.emplace_back(g[i]);
             }
             for (int i = g.size() - 3; i >= 0; --i) {
-                for (int n = l.size(); n >= 2 && ccw(l[n - 2], l[n - 1], g[i]) != CCW_CLOCKWISE; --n) {
+                for (int n = l.size();
+                     n >= 2 && ccw(l[n - 2], l[n - 1], g[i]) != CCW_CLOCKWISE; --n) {
                     l.pop_back();
                 }
                 l.emplace_back(g[i]);
@@ -454,9 +632,13 @@ options head
         mt19937 engine(seed_gen());
         shuffle(g.begin(), g.end(), engine);
 
-        const auto makeCircle3 = [](const Point& a, const Point& b, const Point& c) -> Circle {
-            const real_t A = norm(b - c), B = norm(c - a), C = norm(a - b), S = cross(b - a, c - a);
-            const Point p = (a * (A * (B + C - A)) + b * (B * (C + A - B)) + c * (C * (A + B - C))) / (4.0_r * S * S);
+        const auto makeCircle3 = [](const Point& a, const Point& b,
+                                    const Point& c) -> Circle {
+            const real_t A = norm(b - c), B = norm(c - a), C = norm(a - b),
+            S = cross(b - a, c - a);
+            const Point p =
+                (a * (A * (B + C - A)) + b * (B * (C + A - B)) + c * (C * (A + B - C))) /
+                (4.0_r * S * S);
             const real_t r2 = getDistancePP(p, a);
             return {p, r2};
         };
@@ -490,5 +672,21 @@ options head
         }
 
         return c;
+    }
+
+    void argsort(vector<Point>& ps) {
+        const auto getA = [&](Point p) {
+            if (p.x >= 0 && p.y >= 0) return 0;
+            if (p.y >= 0) return 1;
+            if (p.x <= 0) return -2;
+            return -1;
+        };
+        const auto comp = [&](Point a, Point b) {
+            if (getA(a) != getA(b)) return getA(a) < getA(b);
+            if (a.x == 0 && a.y == 0) return !(b.x == 0 && b.y == 0);
+            if (b.x == 0 && b.y == 0) return false;
+            return cross(a, b) > 0;
+        };
+        sort(ps.begin(), ps.end(), comp);
     }
     // }}}

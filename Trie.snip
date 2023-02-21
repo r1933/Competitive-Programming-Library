@@ -7,7 +7,7 @@ options head
             vector<int> nxt;    // 子の頂点番号を格納、存在しなければ -1
             vector<int> accept; // 末端がこの頂点になる文字列の word_id を保存
             int c;              // base からの間隔
-            int common;         // いくつの文字列がこの頂点を共有しているか
+            int common; // いくつの文字列がこの頂点を共有しているか
             Node(int c_) : c(c_), common(0) {
                 nxt.assign(char_size, -1);
             }
@@ -17,32 +17,32 @@ options head
         int root;
 
         Trie() : root(0) {
-            nodes.emplace_back(root);
+            nodes.push_back(Node(root));
         }
 
         // 文字列の挿入
-        void insert(const string &ward, int ward_id) {
+        void insert(const string& word, int word_id) {
             int node_id = 0;
-            for (const auto e: ward) {
+            for (const auto e: word) {
                 const int c = int(e - base);
-                int &nxt_id = nodes[node_id].nxt[c];
+                int& nxt_id = nodes[node_id].nxt[c];
                 if (nxt_id == -1) {
                     nxt_id = (int) nodes.size();
-                    nodes.emplace_back(c);
+                    nodes.push_back(Node(c));
                 }
                 nodes[node_id].common++;
                 node_id = nxt_id;
             }
             nodes[node_id].common++;
-            nodes[node_id].accept.emplace_back(ward_id);
+            nodes[node_id].accept.emplace_back(word_id);
         }
 
-        void insert(const string &ward) {
-            insert(ward, nodes[0].common);
+        void insert(const string& word) {
+            insert(word, nodes[0].common);
         }
 
         // 指定した文字列の総数
-        int countString(const string &word) {
+        int countString(const string& word) {
             int node_id = 0;
             for (const auto e: word) {
                 const int c = int(e - base);
@@ -56,7 +56,7 @@ options head
         }
 
         // 指定した接頭辞 (prefix) を持つ文字列の総数
-        int countPrefix(const string &prefix) {
+        int countPrefix(const string& prefix) {
             int node_id = 0;
             for (const auto e: prefix) {
                 const int c = int(e - base);
@@ -69,9 +69,10 @@ options head
             return nodes[node_id].common;
         }
 
-        // 文字列 word[word_id...|word|] の接頭辞 (prefix) に一致する文字列を検索し、一致した文字列ごとに関数 fn が呼び出される
+        // 文字列 word[word_id...|word|] の接頭辞 (prefix)
+        // に一致する文字列を検索し、一致した文字列ごとに関数 fn が呼び出される
         template <class Fn>
-        void query(const string &word, const Fn &fn, int word_id, int node_id) {
+        void query(const string& word, const Fn& fn, int word_id, int node_id) {
             for (const auto i: nodes[node_id].accept) fn(i);
             if (word_id >= word.size()) {
                 return;

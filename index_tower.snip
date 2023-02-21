@@ -1,0 +1,88 @@
+snippet index_tower
+options head
+    // index_tower {{{
+    intmax_t totient(intmax_t n) {
+        intmax_t ret = n;
+        for (intmax_t i = 2; i * i <= n; ++i) {
+            if (n % i == 0) {
+                ret -= ret / i;
+                while (n % i == 0) {
+                    n /= i;
+                }
+            }
+        }
+        if (n > 1) {
+            ret -= ret / n;
+        }
+        return ret;
+    }
+
+    intmax_t power(intmax_t b, intmax_t e, intmax_t m) {
+        intmax_t ret = 1;
+        b %= m;
+        for (intmax_t i = e; i > 0; i >>= 1) {
+            if (i & 1) {
+                ret = (ret * b) % m;
+            }
+            b = (b * b) % m;
+        }
+        return ret;
+    }
+
+    intmax_t power(intmax_t b, string e, intmax_t m) {
+        intmax_t ret = 1;
+        b %= m;
+        for (const char c: e) {
+            ret = power(ret, 10, m) * power(b, c - '0', m);
+            ret %= m;
+        }
+        return ret;
+    }
+
+    intmax_t str_mod(string s, intmax_t m) {
+        intmax_t ret = 0;
+        for (const auto c: s) {
+            ret = ret * 10 % m + (c - '0');
+            ret %= m;
+        }
+        return ret;
+    }
+
+    intmax_t index_tower(vector<string> as, intmax_t M) {
+        if (M == 1) return 0;
+
+        vector<string> ts;
+        for (const auto a: as) {
+            if (a == "1") break;
+            ts.emplace_back(a);
+        }
+        as = move(ts);
+        const size_t N = as.size();
+
+        if (as.empty()) return 1 % M;
+        if (N == 1) return str_mod(as[0], M);
+
+        const auto rec = makeFixPoint([&](auto rec, size_t i, intmax_t m) -> intmax_t {
+            if (m == 1) return 0;
+            if (i == N - 2) {
+                if (as[i] <= "5" && as[i + 1] == "2") {
+                    const intmax_t a = stoll(as[i]);
+                    return a * a % m;
+                }
+                if (as[i] == "2") {
+                    if (as[i + 1] == "3") return 8 % m;
+                    if (as[i + 1] == "4") return 16 % m;
+                }
+                return power(str_mod(as[i], m), as[i + 1], m);
+            }
+            if (N >= 3 && i == N - 3) {
+                if (as[i] == "2" && as[i + 1] == "2" && as[i + 2] == "2") {
+                    return 16 % m;
+                }
+            }
+            return power(str_mod(as[i], m), rec(i + 1, totient(m)) + totient(m), m);
+        });
+
+        return rec(0, M);
+    }
+    // }}}

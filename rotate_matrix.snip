@@ -1,0 +1,39 @@
+snippet rotate_matrix
+options head
+    // rotate_matrix {{{
+    // Rotates 90 deg clockwise for ('k' mod 4) times.
+    // if 'k' is negative, this rotates counterclockwise.
+    template <class Row>
+    vector<Row> rotate_matrix(const vector<Row>& m, intmax_t k) {
+        const auto nrow = m.size();
+        const auto ncol = m[0].size();
+        ((k %= 4) += 4) %= 4;
+
+        if (k == 1) {
+            vector<Row> res(ncol);
+            for (auto& row: res) row.resize(nrow);
+            for (size_t r = 0; r < nrow; ++r) {
+                for (size_t c = 0; c < ncol; ++c) res[c][nrow - r - 1] = m[r][c];
+            }
+            return res;
+        }
+        if (k == 2) {
+            vector<Row> res(nrow);
+            for (auto& row: res) row.resize(ncol);
+            for (size_t r = 0; r < nrow; ++r) {
+                for (size_t c = 0; c < ncol; ++c) res[nrow - r - 1][ncol - c - 1] = m[r][c];
+            }
+            return res;
+        }
+        if (k == 3) {
+            vector<Row> res(ncol);
+            for (auto& row: res) row.resize(nrow);
+            for (size_t r = 0; r < nrow; ++r) {
+                for (size_t c = 0; c < ncol; ++c) res[ncol - c - 1][r] = m[r][c];
+            }
+            return res;
+        }
+
+        return m; // k == 0
+    }
+    // }}}

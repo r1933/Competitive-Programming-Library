@@ -2,6 +2,7 @@ snippet powermod
 options head
     intmax_t power(intmax_t b, intmax_t e, intmax_t m) {
         intmax_t ret = 1;
+        b %= m;
         for (intmax_t p = e; p > 0; p >>= 1) {
             if (p & 1) ret = (ret * b) % m;
             b = (b * b) % m;

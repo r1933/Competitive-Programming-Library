@@ -1,0 +1,12 @@
+snippet my_binary_search
+options head
+    // my_binary_search {{{
+    template <class Tp, class Func>
+    Tp my_binary_search(Tp ok, Tp ng, const Func& f) {
+        while (std::abs(ok - ng) > 1) {
+            const Tp mid = std::min(ok, ng) + std::abs(ok - ng) / 2;
+            (f(mid) ? ok : ng) = mid;
+        }
+        return ok;
+    }
+    // }}}
