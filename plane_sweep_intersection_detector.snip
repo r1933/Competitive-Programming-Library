@@ -23,6 +23,7 @@ options head
 
     // 平面操作法により線分の交点を列挙する O(N log N)
     // 走査線を下から上に向かって (離散的に) 移動させる。
+    // ちなみにバグっているので注意。
     vector<Point> plane_sweep_intersection_detector(vector<Segment> ss) {
         MinHeap<Event> event_que;
         for (const auto s: ss) {

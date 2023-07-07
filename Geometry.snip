@@ -84,9 +84,9 @@ options head
             return (*this == rhs) ? true : value > rhs.value;
         }
         template <class T>
-            explicit operator T() const {
-                return static_cast<T>(value);
-            }
+        explicit operator T() const {
+            return static_cast<T>(value);
+        }
 
         friend istream& operator>>(istream& is, Real& rhs) {
             is >> rhs.value;
@@ -376,7 +376,7 @@ options head
 
     bool intersectSS(const Point& p1, const Point& p2, const Point& p3, const Point& p4) {
         return ccw(p1, p2, p3) * ccw(p1, p2, p4) <= 0 &&
-            ccw(p3, p4, p1) * ccw(p3, p4, p2) <= 0;
+               ccw(p3, p4, p1) * ccw(p3, p4, p2) <= 0;
     }
 
     bool intersectSS(const Segment& s1, const Segment& s2) {
@@ -541,19 +541,23 @@ options head
     int convexContains(const Polygon& g, const Point& p) {
         const size_t N = g.size();
         const Point G = (g[0] + g[N / 3] + g[2 * N / 3]) / 3.0_r;
+        const Vector Gp = p - G;
         size_t l = 0, r = N;
         while (r - l > 1) {
             const size_t m = (l + r) / 2;
-            if (cross(g[l] - G, g[m] - G) > 0.0_r) {
-                if (cross(g[l] - G, p - G) > 0.0_r && cross(g[m] - G, p - G) < 0.0_r)
+            const Vector Gl = g[l] - G;
+            const Vector Gm = g[m] - G;
+            if (cross(Gl, Gm) > 0.0_r) {
+                if (cross(Gl, Gp) >= 0.0_r && cross(Gm, Gp) <= 0.0_r) {
                     r = m;
-                else
+                } else
                     l = m;
             } else {
-                if (cross(g[l] - G, p - G) < 0.0_r && cross(g[m] - G, p - G) > 0.0_r)
+                if (cross(Gl, Gp) <= 0.0_r && cross(Gm, Gp) >= 0.0_r) {
                     l = m;
-                else
+                } else {
                     r = m;
+                }
             }
         }
         r %= N;
@@ -635,7 +639,7 @@ options head
         const auto makeCircle3 = [](const Point& a, const Point& b,
                                     const Point& c) -> Circle {
             const real_t A = norm(b - c), B = norm(c - a), C = norm(a - b),
-            S = cross(b - a, c - a);
+                         S = cross(b - a, c - a);
             const Point p =
                 (a * (A * (B + C - A)) + b * (B * (C + A - B)) + c * (C * (A + B - C))) /
                 (4.0_r * S * S);
@@ -674,19 +678,19 @@ options head
         return c;
     }
 
+    const auto getA = [](Point p) {
+        if (p.x >= 0 && p.y >= 0) return 0;
+        if (p.y >= 0) return 1;
+        if (p.x <= 0) return -2;
+        return -1;
+    };
+    const auto comp = [](Point a, Point b) {
+        if (getA(a) != getA(b)) return getA(a) < getA(b);
+        if (a.x == 0 && a.y == 0) return !(b.x == 0 && b.y == 0);
+        if (b.x == 0 && b.y == 0) return false;
+        return cross(a, b) > 0;
+    };
     void argsort(vector<Point>& ps) {
-        const auto getA = [&](Point p) {
-            if (p.x >= 0 && p.y >= 0) return 0;
-            if (p.y >= 0) return 1;
-            if (p.x <= 0) return -2;
-            return -1;
-        };
-        const auto comp = [&](Point a, Point b) {
-            if (getA(a) != getA(b)) return getA(a) < getA(b);
-            if (a.x == 0 && a.y == 0) return !(b.x == 0 && b.y == 0);
-            if (b.x == 0 && b.y == 0) return false;
-            return cross(a, b) > 0;
-        };
         sort(ps.begin(), ps.end(), comp);
     }
     // }}}

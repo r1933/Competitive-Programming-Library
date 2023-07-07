@@ -29,86 +29,75 @@ options head
         }
 
         template <typename T>
-        constexpr explicit operator T() const { return static_cast<T>(numer) / denom; }
+        constexpr explicit operator T() const {
+            return static_cast<T>(numer) / denom;
+        }
     };
 
-    Fraction operator+(const Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.denom + rhs.numer * lhs.denom,
-             lhs.denom * rhs.denom
-            );
+    Fraction operator+(const Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.denom + rhs.numer * lhs.denom, lhs.denom * rhs.denom);
         return ret;
     }
-    Fraction operator+=(Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.denom + rhs.numer * lhs.denom,
-             lhs.denom * rhs.denom
-            );
+    Fraction operator+=(Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.denom + rhs.numer * lhs.denom, lhs.denom * rhs.denom);
         lhs = ret;
         return lhs;
     }
-    Fraction operator-(const Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.denom - rhs.numer * lhs.denom,
-             lhs.denom * rhs.denom
-            );
+    Fraction operator-(const Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.denom - rhs.numer * lhs.denom, lhs.denom * rhs.denom);
         return ret;
     }
-    Fraction operator-=(Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.denom - rhs.numer * lhs.denom,
-             lhs.denom * rhs.denom
-            );
+    Fraction operator-=(Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.denom - rhs.numer * lhs.denom, lhs.denom * rhs.denom);
         lhs = ret;
         return lhs;
     }
-    Fraction operator*(const Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.numer,
-             lhs.denom * rhs.denom
-            );
+    Fraction operator*(const Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.numer, lhs.denom * rhs.denom);
         return ret;
     }
-    Fraction operator*=(Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.numer,
-             lhs.denom * rhs.denom
-            );
+    Fraction operator*=(Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.numer, lhs.denom * rhs.denom);
         lhs = ret;
         return lhs;
     }
-    Fraction operator/(const Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.denom,
-             lhs.denom * rhs.numer
-            );
+    Fraction operator/(const Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.denom, lhs.denom * rhs.numer);
         return ret;
     }
-    Fraction operator/=(Fraction &lhs, const Fraction &rhs) {
-        Fraction ret
-            (lhs.numer * rhs.denom,
-             lhs.denom * rhs.numer
-            );
+    Fraction operator/=(Fraction& lhs, const Fraction& rhs) {
+        Fraction ret(lhs.numer * rhs.denom, lhs.denom * rhs.numer);
         lhs = ret;
         return lhs;
     }
 
-    bool operator<(const Fraction &lhs, const Fraction &rhs) {
+    bool operator<(const Fraction& lhs, const Fraction& rhs) {
         const intmax_t lhs_numer = lhs.numer * rhs.denom;
         const intmax_t rhs_numer = rhs.numer * lhs.denom;
         return lhs_numer < rhs_numer;
     }
-    bool operator>(const Fraction &lhs, const Fraction &rhs) { return rhs < lhs; }
-    bool operator<=(const Fraction &lhs, const Fraction &rhs) { return !(lhs > rhs); }
-    bool operator>=(const Fraction &lhs, const Fraction &rhs) { return !(lhs < rhs); }
-    bool operator==(const Fraction &lhs, const Fraction &rhs) { return !(lhs < rhs) && !(lhs > rhs); }
-    bool operator!=(const Fraction &lhs, const Fraction &rhs) { return (lhs < rhs) || (lhs > rhs); }
+    bool operator>(const Fraction& lhs, const Fraction& rhs) {
+        return rhs < lhs;
+    }
+    bool operator<=(const Fraction& lhs, const Fraction& rhs) {
+        return !(lhs > rhs);
+    }
+    bool operator>=(const Fraction& lhs, const Fraction& rhs) {
+        return !(lhs < rhs);
+    }
+    bool operator==(const Fraction& lhs, const Fraction& rhs) {
+        return !(lhs < rhs) && !(lhs > rhs);
+    }
+    bool operator!=(const Fraction& lhs, const Fraction& rhs) {
+        return (lhs < rhs) || (lhs > rhs);
+    }
 
-    istream& operator>>(istream &is, Fraction &f) {
+    istream& operator>>(istream& is, Fraction& f) {
         is >> f.numer >> f.denom;
+        f = Fraction(f.numer, f.denom);
         return is;
     }
-    ostream& operator<<(ostream &os, const Fraction &f) {
+    ostream& operator<<(ostream& os, const Fraction& f) {
         if (f.denom == 1) {
             os << f.numer;
         } else {

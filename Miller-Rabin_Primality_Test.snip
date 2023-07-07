@@ -1,0 +1,43 @@
+snippet Miller-Rabin Primality Test
+options head
+    // Miller-Rabin Primality Test {{{
+    __int128_t powermod(__int128_t b, __int128_t e, __int128_t m) {
+        __int128_t ret = 1;
+        b %= m;
+        for (__int128_t p = e; p > 0; p >>= 1) {
+            if (p & 1) ret = (ret * b) % m;
+            b = (b * b) % m;
+        }
+        return ret;
+    }
+
+    /*
+       ミラー・ラビン素数判定法により N が素数であるか否か判定する．
+       2^64 未満の整数については，確定的に素数判定できる．
+       時間計算量 O(log N)
+       */
+    bool is_prime(intmax_t N) {
+        if (N <= 1) return false;
+        if (N == 2) return true;
+        if (N % 2 == 0) return false;
+
+        const array<intmax_t, 7> as = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
+        intmax_t s = 0, d = N - 1;
+        while (d % 2 == 0) {
+            s++;
+            d >>= 1;
+        }
+        for (size_t i = 0; i < 7; i++) {
+            if (as[i] % N == 0) return true;
+            intmax_t t, x = powermod(as[i], d, N);
+            if (x != 1) {
+                for (t = 0; t < s; t++) {
+                    if (x == N - 1) break;
+                    x = ((__int128_t) x * x) % N;
+                }
+                if (t == s) return false;
+            }
+        }
+        return true;
+    }
+    // }}}

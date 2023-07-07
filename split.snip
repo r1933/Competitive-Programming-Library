@@ -1,0 +1,15 @@
+snippet split
+options head
+    // 文字列 s を 文字列 delim で分割する．
+    vector<string> split(const string& s, const string& delim) {
+        vector<string> res;
+        const size_t n = s.size();
+        for (size_t i = 0, j; i < n; i = j + 1) {
+            j = s.find_first_of(delim, i);
+            if (j == string::npos) {
+                j = n;
+            }
+            res.emplace_back(s.substr(i, j - i));
+        }
+        return res;
+    }

@@ -1,0 +1,110 @@
+snippet Pollard's Rho Algorithm
+options head
+    // Pollard's Rho Algorithm {{{
+    // Miller-Rabin Primality Test {{{
+    __int128_t powermod(__int128_t b, __int128_t e, __int128_t m) {
+        __int128_t ret = 1;
+        b %= m;
+        for (__int128_t p = e; p > 0; p >>= 1) {
+            if (p & 1) ret = (ret * b) % m;
+            b = (b * b) % m;
+        }
+        return ret;
+    }
+
+    /**
+     *  ミラー・ラビン素数判定法により N が素数であるか否か判定する．
+     *  2^64 未満の整数については，確定的に素数判定できる．
+     *  時間計算量 O(log N)
+     */
+    bool is_prime(intmax_t N) {
+        if (N <= 1) return false;
+        if (N == 2) return true;
+        if (N % 2 == 0) return false;
+
+        const array<intmax_t, 7> as = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
+        intmax_t s = 0, d = N - 1;
+        while (d % 2 == 0) {
+            s++;
+            d >>= 1;
+        }
+        for (size_t i = 0; i < 7; i++) {
+            if (as[i] % N == 0) return true;
+            intmax_t t, x = powermod(as[i], d, N);
+            if (x != 1) {
+                for (t = 0; t < s; t++) {
+                    if (x == N - 1) break;
+                    x = ((__int128_t) x * x) % N;
+                }
+                if (t == s) return false;
+            }
+        }
+        return true;
+    }
+    // }}}
+
+    /**
+     *  ブレントの循環検出法により N の素因数を一つ求める．
+     *  O(N^{1/4}) 程度の計算量で，半分以上の確率で約数の検出を行うことができる．
+     */
+    intmax_t find_prime_factor(intmax_t N) {
+        if (N % 2 == 0) return 2;
+        if (is_prime(N)) return N;
+
+        intmax_t m = pow(N, 0.125) + 1;
+
+        for (intmax_t c = 1; c < N; c++) {
+            const auto f = [&](intmax_t x) -> intmax_t {
+                return ((__int128_t) x * x + c) % N;
+            };
+            intmax_t x, y = 0, ys;
+            intmax_t g, q, r;
+            g = q = r = 1;
+            intmax_t k = 0;
+            while (g == 1) {
+                x = y;
+                while (k < 3 * r / 4) {
+                    y = f(y);
+                    k++;
+                }
+                while (k < r && g == 1) {
+                    ys = y;
+                    for (intmax_t l = 0; l < min(m, r - k); l++) {
+                        y = f(y);
+                        q = ((__int128_t) q * diff(x, y)) % N;
+                    }
+                    g = gcd(q, N);
+                    k += m;
+                }
+                k = r;
+                r *= 2;
+            }
+            if (g == N) {
+                g = 1;
+                y = ys;
+                while (g == 1) {
+                    y = f(y);
+                    g = gcd(diff(x, y), N);
+                }
+            }
+            if (g == N) continue;
+            if (is_prime(g)) return g;
+            if (is_prime(N / g)) return N / g;
+            return find_prime_factor(g);
+        }
+        return 0;
+    }
+
+    // 正の整数 N を素因数分解する
+    map<intmax_t, intmax_t> prime_factorize(intmax_t N) {
+        map<intmax_t, intmax_t> ret;
+        while (N > 1) {
+            intmax_t p = find_prime_factor(N);
+            while (N % p == 0) {
+                ret[p]++;
+                N /= p;
+            }
+        }
+        return ret;
+    }
+    // }}}

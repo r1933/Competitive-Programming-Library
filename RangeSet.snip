@@ -110,7 +110,7 @@ options head
         }
 
         // x 以上で含まれない最小要素
-        intmax_t mex(int x = 0) const {
+        intmax_t mex(intmax_t x = 0) const {
             auto it = prev(s.lower_bound(make_pair(x + 1, x + 1)));
             if (it->first <= x && x <= it->second) {
                 return it->second + 1;
